@@ -1,0 +1,61 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.3.12'
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'org.example.goormssd'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // 웹, JPA, 보안, 검증
+    // Spring MVC, REST API, 내장 톰캣 서버 포함
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    // Spring Data JPA + Hibernate 포함. DB 연동과 ORM 처리
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    // 로그인/회원가입 등 보안 기능 제공
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    // @Valid, @NotBlank 등 Bean Validation 처리
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // Lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // JWT (Java JWT by JJWT)
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5' // Jackson 사용 시
+
+    // DB
+    runtimeOnly 'com.h2database:h2' // H2 인메모리 DB, 개발 및 테스트 용도
+    runtimeOnly 'com.mysql:mysql-connector-j' // MySQL 드라이버, 실제 운영 DB용
+
+    // Swagger/OpenAPI 문서화
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0'
+
+    // 테스트 관련 라이브러리
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
