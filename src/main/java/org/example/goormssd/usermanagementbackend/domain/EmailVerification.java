@@ -1,9 +1,6 @@
 package org.example.goormssd.usermanagementbackend.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -17,16 +14,21 @@ import java.time.LocalDateTime;
 @Builder
 public class EmailVerification {
 
+
     @Id
-    @Column(nullable = false)
-    private String email; // 이메일 주소 (PK)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @Column(nullable = false)
-    private String code; // 인증 코드 (UUID 등)
+    // 인증 대상 이메일 (Member와 1:1 매핑)
+    @Column(nullable = false, unique = true)
+    private String email;
 
-    @Column(nullable = false)
-    private LocalDateTime expiresAt; // 인증 유효 시간
+    // 이메일 인증용 고유 코드 (UUID 등)
+    @Column(nullable = false, unique = true)
+    private String code;
 
+    // 만료 시간
     @Column(nullable = false)
-    private boolean verified = false; // 인증 완료 여부
+    private LocalDateTime expiresAt;
+
 }
