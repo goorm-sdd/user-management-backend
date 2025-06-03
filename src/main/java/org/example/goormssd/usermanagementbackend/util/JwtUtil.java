@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.util.Base64;
 import java.util.Date;
 
 @Component
@@ -22,6 +23,7 @@ public class JwtUtil {
     @PostConstruct
     protected void init() {
         // Base64 인코딩 후 Key 객체로 변환
+        byte[] keyBytes = Base64.getDecoder().decode(secretKeyString);
         this.secretKey = Keys.hmacShaKeyFor(secretKeyString.getBytes());
     }
 
