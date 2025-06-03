@@ -33,6 +33,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     // @Valid, @NotBlank 등 Bean Validation 처리
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+    // 이메일 발송 기능
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
 
     // Lombok
     compileOnly 'org.projectlombok:lombok'
