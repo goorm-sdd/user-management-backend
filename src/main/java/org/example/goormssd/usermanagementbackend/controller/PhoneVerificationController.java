@@ -1,6 +1,7 @@
 package org.example.goormssd.usermanagementbackend.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.example.goormssd.usermanagementbackend.dto.request.PhoneVerifyCodeRequestDto;
 import org.example.goormssd.usermanagementbackend.dto.request.PhoneVerifyRequestDto;
 import org.example.goormssd.usermanagementbackend.service.PhoneVerificationService;
 import org.springframework.http.ResponseEntity;
@@ -21,4 +22,11 @@ public class PhoneVerificationController {
         phoneService.sendVerificationCode(requestDto.getPhoneNumber());
         return ResponseEntity.ok("인증번호가 발송되었습니다.");
     }
+
+    @PostMapping("/verify")
+    public ResponseEntity<?> verifyCode(@RequestBody PhoneVerifyCodeRequestDto requestDto) {
+        phoneService.verifyCode(requestDto.getPhoneNumber(), requestDto.getCode());
+        return ResponseEntity.ok("인증이 완료되었습니다.");
+    }
+
 }

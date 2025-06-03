@@ -68,4 +68,20 @@ public class PhoneVerificationService {
     private String generateRandomCode() {
         return String.format("%06d", new Random().nextInt(999999));
     }
+
+    public void verifyCode(String phoneNumber, String inputCode) {
+        PhoneVerification verification = repository.findById(phoneNumber)
+                .orElseThrow(() -> new IllegalArgumentException("인증 요청 기록이 없습니다."));
+
+        if (verification.getExpiresAt().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("인증번호가 만료되었습니다.");
+        }
+
+        if (!verification.getCode().equals(inputCode)) {
+            throw new IllegalArgumentException("인증번호가 일치하지 않습니다.");
+        }
+
+        verification.setVerified(true);
+        repository.save(verification);
+    }
 }
