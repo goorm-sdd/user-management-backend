@@ -8,8 +8,6 @@ import net.nurigo.sdk.message.request.SingleMessageSendingRequest;
 import net.nurigo.sdk.message.service.DefaultMessageService;
 import org.example.goormssd.usermanagementbackend.domain.PhoneVerification;
 import org.example.goormssd.usermanagementbackend.repository.PhoneVerificationRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
