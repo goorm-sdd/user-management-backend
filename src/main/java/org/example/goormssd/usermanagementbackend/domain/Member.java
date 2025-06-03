@@ -25,29 +25,22 @@ public class Member {
     @Column(nullable = false)
     private String phoneNumber;
 
-    @Column(nullable = false, unique = true, length = 255)
+    @Column(nullable = false, unique = true)
     private String email;
 
     @Column(nullable = false)
     private String password;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "role_id", nullable = false)
-//    private Role role;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
-
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "member_status_id", nullable = false)
-//    private Status status;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Status status;
 
     @Column(nullable = false)
-    private Boolean emailVerified = false;
+    private boolean emailVerified = false;
 
     @Column(nullable = false, updatable = false)
     @CreationTimestamp
