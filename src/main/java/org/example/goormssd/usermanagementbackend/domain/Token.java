@@ -13,11 +13,12 @@ import java.time.LocalDateTime;
 public class Token {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="token_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_id", nullable = false)
-    private Member customer;
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member user;
 
     private String accessToken;
     private String refreshToken;
