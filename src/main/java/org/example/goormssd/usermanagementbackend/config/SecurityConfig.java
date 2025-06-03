@@ -1,5 +1,6 @@
 package org.example.goormssd.usermanagementbackend.config;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.example.goormssd.usermanagementbackend.util.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -46,12 +47,12 @@ public class SecurityConfig {
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(exception -> exception
-                        .authenticationEntryPoint((request, response, authException) -> {
-                            response.sendError(401, "인증이 필요합니다.");
-                        })
-                        .accessDeniedHandler((request, response, accessDeniedException) -> {
-                            response.sendError(403, "접근이 거부되었습니다.");
-                        })
+                        .authenticationEntryPoint((request, response, authException) ->
+                                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "인증이 필요합니다.")
+                        )
+                        .accessDeniedHandler((request, response, accessDeniedException) ->
+                                response.sendError(HttpServletResponse.SC_FORBIDDEN, "접근이 거부되었습니다.")
+                        )
                 )
                 .build();
     }
