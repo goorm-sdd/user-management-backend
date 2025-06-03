@@ -20,8 +20,6 @@ import java.util.Random;
 @RequiredArgsConstructor
 public class PhoneVerificationService {
 
-    private static final Logger log = LoggerFactory.getLogger(PhoneVerificationService.class);
-
 
     @Value("${coolsms.api.key}")
     private String apiKey;
