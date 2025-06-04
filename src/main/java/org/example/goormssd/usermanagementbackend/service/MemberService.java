@@ -21,6 +21,10 @@ public class MemberService {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
+        if (memberRepository.existsByEmail(requestDto.getEmail())) {
+            throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
+        }
+
         // 비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(requestDto.getPassword());
 
@@ -42,5 +46,9 @@ public class MemberService {
         String code = emailVerificationService.createVerificationEntry(member);
         emailService.sendVerificationEmail(member.getEmail(), code);
 
+    }
+
+    public boolean isEmailDuplicate(String email) {
+        return memberRepository.existsByEmail(email);
     }
 }
