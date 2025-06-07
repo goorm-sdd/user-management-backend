@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.goormssd.usermanagementbackend.dto.request.LoginRequestDto;
 import org.example.goormssd.usermanagementbackend.dto.response.ApiResponseDto;
 import org.example.goormssd.usermanagementbackend.dto.response.LoginResponseDto;
+import org.example.goormssd.usermanagementbackend.dto.response.RefreshTokenDto;
 import org.example.goormssd.usermanagementbackend.service.AuthService;
 import org.example.goormssd.usermanagementbackend.service.dto.LoginResult;
 import org.example.goormssd.usermanagementbackend.util.JwtUtil;
@@ -16,6 +17,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.Arrays;
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -139,5 +144,36 @@ public class AuthController {
         return ResponseEntity.ok(new ApiResponseDto<>(200, "Logout successful.", null));
     }
 
+    @PostMapping("/auth/token/refresh")
+    public ResponseEntity<ApiResponseDto<RefreshTokenDto>> refreshToken(
+            HttpServletRequest request) {
+
+        // 쿠키에서 refreshToken 추출
+        String refreshToken = Arrays.stream(Optional.ofNullable(request.getCookies()).orElse(new Cookie[0]))
+                .filter(c -> "refreshToken".equals(c.getName()))
+                .map(Cookie::getValue)
+                .findFirst()
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST, "refreshToken이 전달되지 않음"
+                ));
+
+        // DB에서 유효 여부 확인
+        if (!authService.isValidRefreshToken(refreshToken)) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED, "유효하지 않거나 만료된 refreshToken"
+            );
+        }
+
+        // 새 AccessToken 발급
+        String email = jwtUtil.extractEmail(refreshToken);
+        String newAccessToken = jwtUtil.generateAccessToken(email);
+
+
+        RefreshTokenDto body = new RefreshTokenDto(newAccessToken);
+        ApiResponseDto<RefreshTokenDto> apiResponse =
+                new ApiResponseDto<>(200, "Token refreshed", body);
+
+        return ResponseEntity.ok(apiResponse);
+    }
 
 }

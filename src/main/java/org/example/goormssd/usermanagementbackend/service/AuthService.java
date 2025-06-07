@@ -122,4 +122,12 @@ public class AuthService {
                     tokenRepository.save(token);
                 });
     }
+
+    //전달된 refreshToken이 DB에 남아있고 deletedAt이 null인지 확인
+    public boolean isValidRefreshToken(String refreshToken) {
+        return tokenRepository
+                .findByRefreshTokenAndDeletedAtIsNull(refreshToken)
+                .isPresent();
+    }
+
 }
