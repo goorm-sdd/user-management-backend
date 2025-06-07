@@ -10,7 +10,9 @@ import org.example.goormssd.usermanagementbackend.dto.response.ApiResponseDto;
 import org.example.goormssd.usermanagementbackend.dto.response.LoginResponseDto;
 import org.example.goormssd.usermanagementbackend.service.AuthService;
 import org.example.goormssd.usermanagementbackend.service.dto.LoginResult;
+import org.example.goormssd.usermanagementbackend.util.JwtUtil;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
+    private final JwtUtil jwtUtil;
 
     // @RequiredArgsConstructor를 사용하면 @Autowired가 필요없음
     // 가독성과 코드 간결성을 위해 @RequiredArgsConstructor를 사용하는 뱡향이 나아보임
@@ -79,6 +82,20 @@ public class AuthController {
 //        String accessToken = authHeader.substring(7);
 //        authService.logout(accessToken);
 
+        // AccessToken 검증
+        String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(new ApiResponseDto<>(401, "AccessToken이 필요합니다.", null));
+        }
+        String accessToken = authHeader.substring(7);
+        if (!jwtUtil.validateToken(accessToken)) {
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(new ApiResponseDto<>(401, "AccessToken이 유효하지 않습니다.", null));
+        }
+
         // 디버깅용: 모든 쿠키 로깅
         if (request.getCookies() != null) {
             for (Cookie c : request.getCookies()) {
@@ -100,7 +117,6 @@ public class AuthController {
             }
         }
 
-
         // refreshToken 있으면 서비스에 전달하여 DB 삭제
         if (refreshToken != null && !refreshToken.isBlank()) {
             authService.logout(refreshToken);
@@ -108,7 +124,6 @@ public class AuthController {
         } else {
             log.warn("[로그아웃] refreshToken이 전달되지 않음");
         }
-
 
         // 클라이언트에 저장된 RefreshToken 제거
         // api 명세에 써있지 않은 부분 로그아웃 시에는 RefreshToken을 제거 해야할 필요가 있음
@@ -123,4 +138,6 @@ public class AuthController {
 
         return ResponseEntity.ok(new ApiResponseDto<>(200, "Logout successful.", null));
     }
+
+
 }
