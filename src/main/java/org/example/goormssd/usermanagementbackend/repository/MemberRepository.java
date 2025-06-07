@@ -12,4 +12,6 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
 
     boolean existsByEmail(String email);
 
+    long countByStatus(Member.Status status);
+
 }
