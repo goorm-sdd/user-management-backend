@@ -2,6 +2,7 @@ package org.example.goormssd.usermanagementbackend.config;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.goormssd.usermanagementbackend.util.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+@Slf4j
 @EnableWebSecurity
 @Configuration
 @RequiredArgsConstructor
@@ -28,36 +30,49 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        return http
-                .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/h2-console/**", "/api/auth/**")
-                ).headers(headers -> headers
-                        .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin
-                        )
+        http
+                // CSRF 비활성화: JWT 사용 시 세션 상태 없음
+                .csrf(AbstractHttpConfigurer::disable)
+                // H2 Console 프레임 옵션 허용
+                .headers(headers -> headers
+                        .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)
                 )
-                .formLogin(AbstractHttpConfigurer::disable)
-                .httpBasic(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/signout").authenticated()  // 로그아웃은 인증 필요
-                        .requestMatchers("/h2-console/**").permitAll()
-                        .requestMatchers("/api/users/**").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .anyRequest().authenticated()
-                )
+                // Stateless 세션 관리
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-                .exceptionHandling(exception -> exception
-                        .authenticationEntryPoint((request, response, authException) ->
-                                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "인증이 필요합니다.")
-                        )
-                        .accessDeniedHandler((request, response, accessDeniedException) ->
-                                response.sendError(HttpServletResponse.SC_FORBIDDEN, "접근이 거부되었습니다.")
-                        )
+                .formLogin(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
+
+                // 권한 정책 정의
+                .authorizeHttpRequests(auth -> auth
+                        // 인증 없이 접근 허용
+                        .requestMatchers("/api/auth/**", "/h2-console/**").permitAll()
+                        // 사용자 권한 필요
+                        .requestMatchers("/api/users/**").hasAnyRole("USER", "ADMIN")
+                        // 관리자 권한 필요
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        // 로그아웃은 인증된 사용자만
+                        .requestMatchers("/api/signout").authenticated()
+                        // 그 외 요청 인증 필요
+                        .anyRequest().authenticated()
                 )
-                .build();
+
+                // JWT 필터 등록
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((req, res, expt) -> {
+                            log.warn("인증 실패: {}", expt.getMessage());
+                            res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "인증이 필요합니다.");
+                        })
+                        .accessDeniedHandler((req, res, expt) -> {
+                            log.warn("접근 거부: {}", expt.getMessage());
+                            res.sendError(HttpServletResponse.SC_FORBIDDEN, "접근이 거부되었습니다.");
+                        })
+                );
+
+        return http.build();
     }
 
     @Bean

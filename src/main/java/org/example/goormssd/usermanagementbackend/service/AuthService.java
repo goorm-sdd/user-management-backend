@@ -10,7 +10,6 @@ import org.example.goormssd.usermanagementbackend.repository.TokenRepository;
 import org.example.goormssd.usermanagementbackend.service.dto.LoginResult;
 import org.example.goormssd.usermanagementbackend.util.JwtUtil;
 //import org.example.goormssd.usermanagementbackend.util.TokenProvider;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -68,10 +67,11 @@ public class AuthService {
 //    }
 
     public LoginResult loginWithUserInfo(LoginRequestDto loginRequest) {
-        Member user = memberRepository.findByEmail(loginRequest.getEmail())
+        // Token 필드명 member 반영
+        Member member = memberRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
-        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+        if (!passwordEncoder.matches(loginRequest.getPassword(), member.getPassword())) {
             throw new RuntimeException("비밀번호가 올바르지 않습니다.");
         }
 
@@ -79,18 +79,29 @@ public class AuthService {
         // DB에는 RefreshToken만 저장 (보안 이슈 최소화)
         // 아직 명확한 해답을 찾지 못했음..
         // 일단 코드적으로 AccessToken은 저장하지 않는 로직을 변경
-        String accessToken = jwtUtil.generateAccessToken(user.getEmail());
-        String refreshToken = jwtUtil.generateRefreshToken(user.getEmail());
+        String accessToken = jwtUtil.generateAccessToken(member.getEmail());
+        String refreshToken = jwtUtil.generateRefreshToken(member.getEmail());
 
-        Token token = new Token();
-        token.setUser(user);
-//        token.setAccessToken(accessToken);
-        token.setRefreshToken(refreshToken);
-        token.setDeletedAt(null);
+//        Token token = new Token();
+//        token.setUser(user);
+////        token.setAccessToken(accessToken);
+//        token.setRefreshToken(refreshToken);
+//        token.setDeletedAt(null);
 
+        // RefreshToken 엔티티 저장 (Soft Delete 시 deletedAt 업데이트)
+        // build() 메서드를 사용하여 Token 객체 생성
+        Token token = Token.builder()
+                .member(member)                 // 회원 정보 매핑
+                .refreshToken(refreshToken)     // 저장할 리프레시 토큰
+                .deletedAt(null)                // 초기에는 미삭제
+                .build();
         tokenRepository.save(token);
 
-        return new LoginResult(accessToken, refreshToken, new LoginUserDto(user));
+        return new LoginResult(
+                accessToken,
+                refreshToken,
+                new LoginUserDto(member)
+        );
     }
 
 //    public void logout(String accessToken) {
@@ -101,9 +112,8 @@ public class AuthService {
 //    }
 
     // 로그아웃
-    // 전달된 refreshToken을 통해 DB에서 해당 토큰을 찾아 삭제 처리
-    // 존재하고 아직 만료되지 않은 경우, 삭제 시간(deletedAt) 업데이트
-    // 클라이언트 측에서는 refreshToken이 삭제되므로 세션 종료 (자동 로그아웃)
+    // 전달받은 RefreshToken으로 DB에서 엔티티 조회
+    // 존재 시 deletedAt 업데이트로 소프트 삭제
     public void logout(String refreshToken) {
         // 아직 삭제되지 않은(refreshToken + deletedAt = null) 토큰을 DB에서 조회
         tokenRepository.findByRefreshTokenAndDeletedAtIsNull(refreshToken)

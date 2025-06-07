@@ -1,10 +1,9 @@
 package org.example.goormssd.usermanagementbackend.util;
 
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -12,6 +11,7 @@ import javax.crypto.SecretKey;
 import java.util.Base64;
 import java.util.Date;
 
+@Slf4j
 @Component
 public class JwtUtil {
 
@@ -20,6 +20,9 @@ public class JwtUtil {
 
     @Value("${jwt.access-token-expiration-ms:3600000}") // 기본 1시간
     private long accessTokenExpiration;
+
+    @Value("${jwt.refresh-token-expiration-ms:604800000}") // 기본 7일
+    private long refreshTokenExpiration;
 
     private SecretKey secretKey;
 
@@ -30,33 +33,29 @@ public class JwtUtil {
         this.secretKey = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    // AccessToken 생성
-    public String generateAccessToken(String email) {
+    // 토큰 생성 (사용자 이메일, 만료 시간, 토큰 타입)
+    public String generateToken(String email, long expirationMs) {
         return Jwts.builder()
                 .setSubject(email)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + accessTokenExpiration))
+                .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
                 .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    public String generateAccessToken(String email) {
+        return generateToken(email, accessTokenExpiration);
     }
 
     // RefreshToken 생성 (7일)
     public String generateRefreshToken(String email) {
-        long expiration = 1000L * 60 * 60 * 24 * 7; // 7일
-        return Jwts.builder()
-                .setSubject(email)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(secretKey, SignatureAlgorithm.HS256)
-                .compact();
+        return generateToken(email, refreshTokenExpiration);
     }
+
 
     // 이메일 추출
     public String extractEmail(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(secretKey)
-                .build()
-                .parseClaimsJws(token)
+        return parseClaims(token)
                 .getBody()
                 .getSubject();
     }
@@ -64,15 +63,20 @@ public class JwtUtil {
     // 토큰 유효성 검사
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder()
-                    .setSigningKey(secretKey)
-                    .build()
-                    .parseClaimsJws(token);
+            parseClaims(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
-            System.out.println("[JWT 검증 실패] 원인: " + e.getMessage());  // 로그 추가
+            log.warn("[JWT 검증 실패] 원인: {}", e.getMessage());
             return false;
         }
+    }
+
+    private Jws<Claims> parseClaims(String token) {
+        String rawToken = token.startsWith("Bearer ") ? token.substring(7) : token;
+        return Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(rawToken);
     }
 }
 
