@@ -1,7 +1,6 @@
 package org.example.goormssd.usermanagementbackend.repository;
 
 import org.example.goormssd.usermanagementbackend.domain.Token;
-import org.example.goormssd.usermanagementbackend.domain.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
