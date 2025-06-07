@@ -10,8 +10,10 @@ import org.example.goormssd.usermanagementbackend.repository.TokenRepository;
 import org.example.goormssd.usermanagementbackend.service.dto.LoginResult;
 import org.example.goormssd.usermanagementbackend.util.JwtUtil;
 //import org.example.goormssd.usermanagementbackend.util.TokenProvider;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 
@@ -75,6 +77,12 @@ public class AuthService {
             throw new RuntimeException("비밀번호가 올바르지 않습니다.");
         }
 
+        if (!member.isEmailVerified()) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN, "이메일 인증을 완료해야 로그인할 수 있습니다."
+            );
+        }
+
         // AccessToken은 클라이언트가 저장 (서버 저장 불필요)
         // DB에는 RefreshToken만 저장 (보안 이슈 최소화)
         // 아직 명확한 해답을 찾지 못했음..
@@ -127,6 +135,9 @@ public class AuthService {
     public boolean isValidRefreshToken(String refreshToken) {
         return tokenRepository
                 .findByRefreshTokenAndDeletedAtIsNull(refreshToken)
+                .map(token -> token.getMember())                // 토큰 소유자(Member) 조회
+                .filter(member -> member.isEmailVerified())    // 이메일 인증 여부 체크
+                .filter(member -> member.getStatus().isActive()) // 계정 상태(ACTIVE) 체크
                 .isPresent();
     }
 
