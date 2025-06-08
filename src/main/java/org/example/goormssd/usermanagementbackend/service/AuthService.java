@@ -1,41 +1,34 @@
 package org.example.goormssd.usermanagementbackend.service;
 
+import lombok.RequiredArgsConstructor;
 import org.example.goormssd.usermanagementbackend.domain.Member;
 import org.example.goormssd.usermanagementbackend.domain.Token;
-import org.example.goormssd.usermanagementbackend.dto.request.LoginRequestDto;
+import org.example.goormssd.usermanagementbackend.dto.request.*;
 import org.example.goormssd.usermanagementbackend.dto.response.LoginUserDto;
 import org.example.goormssd.usermanagementbackend.repository.MemberRepository;
 import org.example.goormssd.usermanagementbackend.repository.TokenRepository;
 import org.example.goormssd.usermanagementbackend.util.TokenProvider;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Random;
 
 @Service
+@RequiredArgsConstructor
 public class AuthService {
 
     private final MemberRepository memberRepository;
     private final TokenRepository tokenRepository;
     private final TokenProvider tokenProvider;
     private final PasswordEncoder passwordEncoder;
-
-    @Autowired
-    public AuthService(MemberRepository memberRepository,
-                       TokenRepository tokenRepository,
-                       TokenProvider tokenProvider,
-                       PasswordEncoder passwordEncoder) {
-        this.memberRepository = memberRepository;
-        this.tokenRepository = tokenRepository;
-        this.tokenProvider = tokenProvider;
-        this.passwordEncoder = passwordEncoder;
-    }
+    private final PhoneVerificationService phoneVerificationService;
+    private final EmailService emailService;
 
     public class LoginResult {
-        private String accessToken;
-        private String refreshToken;
-        private LoginUserDto user;
+        private final String accessToken;
+        private final String refreshToken;
+        private final LoginUserDto user;
 
         public LoginResult(String accessToken, String refreshToken, LoginUserDto user) {
             this.accessToken = accessToken;
@@ -43,17 +36,9 @@ public class AuthService {
             this.user = user;
         }
 
-        public String getAccessToken() {
-            return accessToken;
-        }
-
-        public String getRefreshToken() {
-            return refreshToken;
-        }
-
-        public LoginUserDto getUser() {
-            return user;
-        }
+        public String getAccessToken() { return accessToken; }
+        public String getRefreshToken() { return refreshToken; }
+        public LoginUserDto getUser() { return user; }
     }
 
     public LoginResult loginWithUserInfo(LoginRequestDto loginRequest) {
@@ -84,4 +69,46 @@ public class AuthService {
         token.setDeletedAt(LocalDateTime.now());
         tokenRepository.save(token);
     }
+
+    public void verifyPhoneCode(PhoneVerifyCodeRequestDto dto) {
+        phoneVerificationService.verifyCode(dto.getPhoneNumber(), dto.getCode());
+    }
+
+    public String findEmailByUsernameAndPhone(FindEmailRequestDto dto) {
+//        phoneVerificationService.verifyCode(dto.getPhoneNumber(), dto.getCode());
+
+        return memberRepository.findAll().stream()
+                .filter(m -> m.getUsername().equals(dto.getUsername())
+                        && m.getPhoneNumber().equals(dto.getPhoneNumber()))
+                .map(Member::getEmail)
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("해당 사용자를 찾을 수 없습니다."));
+    }
+
+    public void resetPasswordAndSendEmail(FindPasswordRequestDto dto) {
+        Member member = memberRepository.findByEmail(dto.getEmail())
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+
+        if (!member.getUsername().equals(dto.getUsername())) {
+            throw new RuntimeException("사용자 이름이 일치하지 않습니다.");
+        }
+
+        String tempPassword = generateTempPassword();
+        member.setPassword(passwordEncoder.encode(tempPassword));
+        memberRepository.save(member);
+
+        emailService.sendVerificationEmail(member.getEmail(), tempPassword);
+    }
+
+    private String generateTempPassword() {
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        StringBuilder sb = new StringBuilder();
+        Random rnd = new Random();
+        for (int i = 0; i < 10; i++) {
+            sb.append(chars.charAt(rnd.nextInt(chars.length())));
+        }
+        return sb.toString();
+    }
+
+
 }

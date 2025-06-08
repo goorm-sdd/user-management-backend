@@ -2,10 +2,10 @@ package org.example.goormssd.usermanagementbackend.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.example.goormssd.usermanagementbackend.dto.request.LoginRequestDto;
+import org.example.goormssd.usermanagementbackend.dto.request.*;
 import org.example.goormssd.usermanagementbackend.dto.response.ApiResponseDto;
+import org.example.goormssd.usermanagementbackend.dto.response.FindEmailResponseDto;
 import org.example.goormssd.usermanagementbackend.dto.response.LoginResponseDto;
-import org.example.goormssd.usermanagementbackend.dto.response.LoginUserDto;
 import org.example.goormssd.usermanagementbackend.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
+
 public class AuthController {
 
     private final AuthService authService;
@@ -54,4 +55,17 @@ public class AuthController {
         authService.logout(token);
         return ResponseEntity.ok(new ApiResponseDto<>(200, "Logout successful.", null));
     }
+
+    @PostMapping("/find/email")
+    public ResponseEntity<ApiResponseDto<FindEmailResponseDto>> findEmail(@RequestBody FindEmailRequestDto request) {
+        String email = authService.findEmailByUsernameAndPhone(request);
+        return ResponseEntity.ok(new ApiResponseDto<>(200, "Email (ID) retrieved successfully.", new FindEmailResponseDto(email)));
+    }
+
+    @PostMapping("/find/password")
+    public ResponseEntity<ApiResponseDto<Void>> resetPassword(@RequestBody FindPasswordRequestDto request) {
+        authService.resetPasswordAndSendEmail(request);
+        return ResponseEntity.ok(new ApiResponseDto<>(200, "Temporary password has been sent via email.", null));
+    }
+
 }
