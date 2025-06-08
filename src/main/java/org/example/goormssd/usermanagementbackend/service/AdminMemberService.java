@@ -3,6 +3,7 @@ package org.example.goormssd.usermanagementbackend.service;
 import lombok.RequiredArgsConstructor;
 import org.example.goormssd.usermanagementbackend.domain.Member;
 import org.example.goormssd.usermanagementbackend.dto.response.DashboardResponseDto;
+import org.example.goormssd.usermanagementbackend.dto.response.MemberListResponseDto;
 import org.example.goormssd.usermanagementbackend.dto.response.MemberResponseDto;
 import org.example.goormssd.usermanagementbackend.repository.MemberRepository;
 import org.springframework.data.domain.Page;
@@ -33,7 +34,7 @@ public class AdminMemberService {
                         member.getEmail(),
                         member.getPhoneNumber(),
                         member.getRole().name(),
-                        member.getStatus().name(),
+                        member.getStatus().name().toLowerCase(),
                         member.isEmailVerified(),
                         member.getCreatedAt()
                 ))
@@ -45,6 +46,33 @@ public class AdminMemberService {
         return new DashboardResponseDto(
                 sumUser,
                 deletedUser,
+                users,
+                page.getNumber() + 1,
+                page.getSize(),
+                page.getTotalPages(),
+                page.getTotalElements()
+        );
+    }
+
+    public MemberListResponseDto getAllMembers(int pageNum, int pageLimit, String sortBy, String sortDir) {
+        Sort.Direction direction = Sort.Direction.fromString(sortDir);
+        Pageable pageable = PageRequest.of(pageNum - 1, pageLimit, Sort.by(direction, sortBy));
+        Page<Member> page = memberRepository.findAll(pageable);
+
+        List<MemberResponseDto> users = page.getContent().stream()
+                .map(member -> new MemberResponseDto(
+                        member.getId(),
+                        member.getUsername(),
+                        member.getEmail(),
+                        member.getPhoneNumber(),
+                        member.getRole().name(),
+                        member.getStatus().name().toLowerCase(),
+                        member.isEmailVerified(),
+                        member.getCreatedAt()
+                ))
+                .collect(Collectors.toList());
+
+        return new MemberListResponseDto(
                 users,
                 page.getNumber() + 1,
                 page.getSize(),
