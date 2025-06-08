@@ -5,6 +5,7 @@ import org.example.goormssd.usermanagementbackend.domain.Member;
 import org.example.goormssd.usermanagementbackend.dto.response.DashboardResponseDto;
 import org.example.goormssd.usermanagementbackend.dto.response.MemberResponseDto;
 import org.example.goormssd.usermanagementbackend.repository.MemberRepository;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -22,6 +23,8 @@ public class AdminMemberService {
     public DashboardResponseDto getDashboard(int pageNum, int pageLimit) {
         Pageable pageable = PageRequest.of(pageNum - 1, pageLimit, Sort.by("createdAt").descending());
 
+        Page<Member> page = memberRepository.findAll(pageable);
+
         List<MemberResponseDto> users = memberRepository.findAll(pageable)
                 .stream()
                 .map(member -> new MemberResponseDto(
@@ -30,7 +33,7 @@ public class AdminMemberService {
                         member.getEmail(),
                         member.getPhoneNumber(),
                         member.getRole().name(),
-                        member.getStatus().name().toLowerCase(),
+                        member.getStatus().name(),
                         member.isEmailVerified(),
                         member.getCreatedAt()
                 ))
@@ -39,6 +42,14 @@ public class AdminMemberService {
         long sumUser     = memberRepository.count();
         long deletedUser = memberRepository.countByStatus(Member.Status.DELETED);
 
-        return new DashboardResponseDto(sumUser, deletedUser, users);
+        return new DashboardResponseDto(
+                sumUser,
+                deletedUser,
+                users,
+                page.getNumber() + 1,
+                page.getSize(),
+                page.getTotalPages(),
+                page.getTotalElements()
+        );
     }
 }

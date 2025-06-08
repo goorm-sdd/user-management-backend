@@ -15,4 +15,9 @@ public class DashboardResponseDto {
     private long sumUser;
     private long deletedUser;
     private List<MemberResponseDto> users;
+
+    private int currentPage;
+    private int pageLimit;
+    private int totalPages;
+    private long totalElements;
 }
