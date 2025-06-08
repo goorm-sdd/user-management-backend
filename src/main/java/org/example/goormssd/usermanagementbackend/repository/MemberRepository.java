@@ -18,4 +18,6 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
 
     Page<Member> findAllByStatus(Member.Status status, Pageable pageable);
 
+    Page<Member> findAllByEmailVerifiedFalse(Pageable pageable);
+
 }

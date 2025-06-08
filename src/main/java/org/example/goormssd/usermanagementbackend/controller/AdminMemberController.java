@@ -58,4 +58,19 @@ public class AdminMemberController {
                 ApiResponseDto.of(200, "탈퇴 회원 조회 성공", dto)
         );
     }
+
+    @GetMapping("/unverified")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponseDto<MemberListResponseDto>> getUnverifiedEmailMembers(
+            @RequestParam(name = "pageNum",   defaultValue = "1")         int pageNum,
+            @RequestParam(name = "pageLimit", defaultValue = "10")        int pageLimit,
+            @RequestParam(name = "sortBy",    defaultValue = "createdAt") String sortBy,
+            @RequestParam(name = "sortDir",   defaultValue = "desc")      String sortDir
+    ) {
+        MemberListResponseDto dto = adminMemberService.getUnverifiedEmailMembers(pageNum, pageLimit, sortBy, sortDir);
+        return ResponseEntity.ok(
+                ApiResponseDto.of(200, "이메일 미인증 회원 조회 성공", dto)
+        );
+    }
+
 }

@@ -108,4 +108,32 @@ public class AdminMemberService {
                 page.getTotalElements()
         );
     }
+
+    public MemberListResponseDto getUnverifiedEmailMembers(int pageNum, int pageLimit, String sortBy, String sortDir) {
+        Sort.Direction direction = Sort.Direction.fromString(sortDir);
+        Pageable pageable = PageRequest.of(pageNum - 1, pageLimit, Sort.by(direction, sortBy));
+
+        Page<Member> page = memberRepository.findAllByEmailVerifiedFalse(pageable);
+
+        List<MemberResponseDto> users = page.getContent().stream()
+                .map(member -> new MemberResponseDto(
+                        member.getId(),
+                        member.getUsername(),
+                        member.getEmail(),
+                        member.getPhoneNumber(),
+                        member.getRole().name(),
+                        member.getStatus().name().toLowerCase(),
+                        member.isEmailVerified(),
+                        member.getCreatedAt()
+                ))
+                .collect(Collectors.toList());
+
+        return new MemberListResponseDto(
+                users,
+                page.getNumber() + 1,
+                page.getSize(),
+                page.getTotalPages(),
+                page.getTotalElements()
+        );
+    }
 }
