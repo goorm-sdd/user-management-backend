@@ -3,6 +3,7 @@ package org.example.goormssd.usermanagementbackend.service;
 import lombok.RequiredArgsConstructor;
 import org.example.goormssd.usermanagementbackend.domain.Member;
 import org.example.goormssd.usermanagementbackend.dto.response.DashboardResponseDto;
+import org.example.goormssd.usermanagementbackend.dto.response.MemberDetailResponseDto;
 import org.example.goormssd.usermanagementbackend.dto.response.MemberListResponseDto;
 import org.example.goormssd.usermanagementbackend.dto.response.MemberResponseDto;
 import org.example.goormssd.usermanagementbackend.repository.MemberRepository;
@@ -134,6 +135,18 @@ public class AdminMemberService {
                 page.getSize(),
                 page.getTotalPages(),
                 page.getTotalElements()
+        );
+    }
+
+    public MemberDetailResponseDto getMemberDetailByEmail(String email) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("해당 이메일의 회원이 존재하지 않습니다. email=" + email));
+        return new MemberDetailResponseDto(
+                member.getId(),
+                member.getUsername(),
+                member.getEmail(),
+                member.getPhoneNumber(),
+                member.getPassword()
         );
     }
 }
