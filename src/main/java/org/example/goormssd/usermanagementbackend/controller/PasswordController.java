@@ -3,7 +3,6 @@ package org.example.goormssd.usermanagementbackend.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.goormssd.usermanagementbackend.dto.request.PasswordVerifyRequestDto;
-import org.example.goormssd.usermanagementbackend.dto.response.PasswordVerifyResponseDto;
 import org.example.goormssd.usermanagementbackend.dto.response.ReauthResponseDto;
 import org.example.goormssd.usermanagementbackend.service.PasswordService;
 import org.example.goormssd.usermanagementbackend.util.JwtUtil;
