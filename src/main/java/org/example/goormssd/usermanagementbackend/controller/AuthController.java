@@ -5,8 +5,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.goormssd.usermanagementbackend.dto.request.FindEmailRequestDto;
+import org.example.goormssd.usermanagementbackend.dto.request.FindPasswordRequestDto;
 import org.example.goormssd.usermanagementbackend.dto.request.LoginRequestDto;
 import org.example.goormssd.usermanagementbackend.dto.response.ApiResponseDto;
+import org.example.goormssd.usermanagementbackend.dto.response.FindEmailResponseDto;
 import org.example.goormssd.usermanagementbackend.dto.response.LoginResponseDto;
 import org.example.goormssd.usermanagementbackend.dto.response.RefreshTokenDto;
 import org.example.goormssd.usermanagementbackend.service.AuthService;
@@ -175,5 +178,17 @@ public class AuthController {
 
         return ResponseEntity.ok(apiResponse);
     }
+    @PostMapping("/auth/find/email")
+    public ResponseEntity<ApiResponseDto<FindEmailResponseDto>> findEmail(@RequestBody FindEmailRequestDto request) {
+        String email = authService.findEmailByUsernameAndPhone(request);
+        return ResponseEntity.ok(new ApiResponseDto<>(200, "Email (ID) retrieved successfully.", new FindEmailResponseDto(email)));
+    }
+
+    @PostMapping("/auth/find/password")
+    public ResponseEntity<ApiResponseDto<Void>> resetPassword(@RequestBody FindPasswordRequestDto request) {
+        authService.resetPasswordAndSendEmail(request);
+        return ResponseEntity.ok(new ApiResponseDto<>(200, "Temporary password has been sent via email.", null));
+    }
+
 
 }

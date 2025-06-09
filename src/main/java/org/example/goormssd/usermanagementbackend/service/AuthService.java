@@ -3,7 +3,10 @@ package org.example.goormssd.usermanagementbackend.service;
 import lombok.RequiredArgsConstructor;
 import org.example.goormssd.usermanagementbackend.domain.Member;
 import org.example.goormssd.usermanagementbackend.domain.Token;
+import org.example.goormssd.usermanagementbackend.dto.request.FindEmailRequestDto;
+import org.example.goormssd.usermanagementbackend.dto.request.FindPasswordRequestDto;
 import org.example.goormssd.usermanagementbackend.dto.request.LoginRequestDto;
+import org.example.goormssd.usermanagementbackend.dto.request.PhoneVerifyCodeRequestDto;
 import org.example.goormssd.usermanagementbackend.dto.response.LoginUserDto;
 import org.example.goormssd.usermanagementbackend.repository.MemberRepository;
 import org.example.goormssd.usermanagementbackend.repository.TokenRepository;
@@ -13,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +28,8 @@ public class AuthService {
 //    private final TokenProvider tokenProvider;
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
+    private final PhoneVerificationService phoneVerificationService;
+    private final EmailService emailService;
 
     // AuthController에서와 동일한 이유로 생성자 주입 방식 사용
 //    @Autowired
@@ -136,6 +142,45 @@ public class AuthService {
 //                .filter(member -> member.isEmailVerified())    // 이메일 인증 여부 체크
 //                .filter(member -> member.getStatus().isActive()) // 계정 상태(ACTIVE) 체크
                 .isPresent();
+    }
+
+    public void verifyPhoneCode(PhoneVerifyCodeRequestDto dto) {
+        phoneVerificationService.verifyCode(dto.getPhoneNumber(), dto.getCode());
+    }
+
+    public String findEmailByUsernameAndPhone(FindEmailRequestDto dto) {
+//        phoneVerificationService.verifyCode(dto.getPhoneNumber(), dto.getCode()); 추후 핸드폰 인증 사용을 위해서 작성하고
+        return memberRepository.findAll().stream()
+                .filter(m -> m.getUsername().equals(dto.getUsername())
+                        && m.getPhoneNumber().equals(dto.getPhoneNumber()))
+                .map(Member::getEmail)
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("해당 사용자를 찾을 수 없습니다."));
+    }
+
+    public void resetPasswordAndSendEmail(FindPasswordRequestDto dto) {
+        Member member = memberRepository.findByEmail(dto.getEmail())
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+
+        if (!member.getUsername().equals(dto.getUsername())) {
+            throw new RuntimeException("사용자 이름이 일치하지 않습니다.");
+        }
+
+        String tempPassword = generateTempPassword();
+        member.setPassword(passwordEncoder.encode(tempPassword));
+        memberRepository.save(member);
+
+        emailService.sendVerificationEmail(member.getEmail(), tempPassword);
+    }
+
+    private String generateTempPassword() {
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        StringBuilder sb = new StringBuilder();
+        Random rnd = new Random();
+        for (int i = 0; i < 10; i++) {
+            sb.append(chars.charAt(rnd.nextInt(chars.length())));
+        }
+        return sb.toString();
     }
 
 }
