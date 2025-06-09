@@ -5,11 +5,15 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.time.Duration;
 import java.util.Base64;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @Component
@@ -84,6 +88,19 @@ public class JwtUtil {
         claims.put("reauth", true);
         return createToken(claims, userDetails.getUsername(),
                 Duration.ofMinutes(5)); // 5분 유효
+    }
+
+    public String createToken(Map<String, Object> claims, String subject, Duration validity) {
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + validity.toMillis());
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(subject)
+                .setIssuedAt(now)
+                .setExpiration(expiryDate)
+                .signWith(secretKey, SignatureAlgorithm.HS256)
+                .compact();
     }
 }
 
