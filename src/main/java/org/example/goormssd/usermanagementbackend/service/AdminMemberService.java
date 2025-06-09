@@ -138,9 +138,9 @@ public class AdminMemberService {
         );
     }
 
-    public MemberDetailResponseDto getMemberDetailByEmail(String email) {
-        Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("해당 이메일의 회원이 존재하지 않습니다. email=" + email));
+    public MemberDetailResponseDto getMemberDetailById(Long id) {
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 회원이 존재하지 않습니다. id=" + id));
         return new MemberDetailResponseDto(
                 member.getId(),
                 member.getUsername(),

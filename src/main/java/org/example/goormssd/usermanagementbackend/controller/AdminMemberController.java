@@ -68,12 +68,12 @@ public class AdminMemberController {
         );
     }
 
-    @GetMapping("/{email}")
+    @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponseDto<MemberDetailResponseDto>> getMemberDetail(
-            @PathVariable String email
+            @PathVariable Long id
     ) {
-        MemberDetailResponseDto dto = adminMemberService.getMemberDetailByEmail(email);
+        MemberDetailResponseDto dto = adminMemberService.getMemberDetailById(id);
         return ResponseEntity.ok(ApiResponseDto.of(200, "User information retrieved successfully.", dto));
     }
 
