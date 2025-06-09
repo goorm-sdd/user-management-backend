@@ -20,4 +20,8 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     Page<Member> findAllByEmailVerifiedFalse(Pageable pageable);
 
+    Page<Member> findByEmailContainingIgnoreCase(String email, Pageable pageable);
+
+    Page<Member> findByUsernameContainingIgnoreCase(String username, Pageable pageable);
+
 }

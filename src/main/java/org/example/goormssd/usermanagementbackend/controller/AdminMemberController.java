@@ -1,10 +1,7 @@
 package org.example.goormssd.usermanagementbackend.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.example.goormssd.usermanagementbackend.dto.response.ApiResponseDto;
-import org.example.goormssd.usermanagementbackend.dto.response.DashboardResponseDto;
-import org.example.goormssd.usermanagementbackend.dto.response.MemberDetailResponseDto;
-import org.example.goormssd.usermanagementbackend.dto.response.MemberListResponseDto;
+import org.example.goormssd.usermanagementbackend.dto.response.*;
 import org.example.goormssd.usermanagementbackend.service.AdminMemberService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -78,5 +75,28 @@ public class AdminMemberController {
     ) {
         MemberDetailResponseDto dto = adminMemberService.getMemberDetailByEmail(email);
         return ResponseEntity.ok(ApiResponseDto.of(200, "User information retrieved successfully.", dto));
+    }
+
+    @GetMapping("/search")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponseDto<MemberListResponseDto>> searchMembers(
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String username,
+            @RequestParam(name = "pageNum", defaultValue = "1") int pageNum,
+            @RequestParam(name = "pageLimit", defaultValue = "10") int pageLimit,
+            @RequestParam(name = "sortBy", defaultValue = "createdAt") String sortBy,
+            @RequestParam(name = "sortDir", defaultValue = "desc") String sortDir
+    ) {
+        // email과 username 동시 사용 제한
+        if (email != null && username != null) {
+            return ResponseEntity.badRequest().body(
+                    ApiResponseDto.of(400, "email과 username은 동시에 검색할 수 없습니다.", null)
+            );
+        }
+
+        MemberListResponseDto dto = adminMemberService.searchMembers(email, username, pageNum, pageLimit, sortBy, sortDir);
+        return ResponseEntity.ok(
+                ApiResponseDto.of(200, "회원 검색 성공", dto)
+        );
     }
 }
