@@ -78,5 +78,12 @@ public class JwtUtil {
                 .build()
                 .parseClaimsJws(rawToken);
     }
+
+    public String generateReauthToken(UserDetails userDetails) {
+        Map<String,Object> claims = new HashMap<>();
+        claims.put("reauth", true);
+        return createToken(claims, userDetails.getUsername(),
+                Duration.ofMinutes(5)); // 5분 유효
+    }
 }
 
