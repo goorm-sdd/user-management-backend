@@ -16,6 +16,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import static org.springframework.http.HttpMethod.*;
+
 @Slf4j
 @EnableWebSecurity
 @Configuration
@@ -23,10 +25,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtFilter;
-//
-//    public SecurityConfig(JwtAuthenticationFilter jwtFilter) {
-//        this.jwtFilter = jwtFilter;
-//    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -54,6 +52,17 @@ public class SecurityConfig {
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         // 로그아웃은 인증된 사용자만
                         .requestMatchers("/api/signout").authenticated()
+                        // 재인증 토큰 허용 엔드포인트
+                        .requestMatchers(POST, "/api/users/password/verify").authenticated()
+                        // 민감 작업
+                        // 내 정보 수정(비밀번호, 전화번호)
+                        .requestMatchers(PATCH, "/api/users/me/**").authenticated()
+                        // 탈퇴
+                        .requestMatchers(PATCH, "/api/users/me").authenticated()
+                        // 관리자 강제 탈퇴 및 복구
+                        .requestMatchers(PATCH, "/api/admin/users/**").authenticated()
+                        // 회원 정보 수정
+                        .requestMatchers(PUT, "/api/admin/users/**").authenticated()
                         // 그 외 요청 인증 필요
                         .anyRequest().authenticated()
                 )
