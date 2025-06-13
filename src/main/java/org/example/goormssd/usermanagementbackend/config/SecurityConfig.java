@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.goormssd.usermanagementbackend.util.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -51,6 +52,8 @@ public class SecurityConfig {
 
                 // 권한 정책 정의
                 .authorizeHttpRequests(auth -> auth
+                        // Preflight 요청 허용
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         // 인증 없이 접근 허용
                         .requestMatchers("/api/auth/**",
                                 "/h2-console/**",
