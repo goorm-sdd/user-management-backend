@@ -29,6 +29,10 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.Arrays;
 import java.util.Optional;
 
+@CrossOrigin(
+        origins = "http://localhost:5173",
+        allowCredentials = "true"
+)
 @Slf4j
 @RestController
 @RequestMapping("/api") // API 버전 관리

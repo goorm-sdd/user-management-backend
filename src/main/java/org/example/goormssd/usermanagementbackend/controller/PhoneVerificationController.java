@@ -7,11 +7,12 @@ import org.example.goormssd.usermanagementbackend.dto.request.PhoneVerifyCodeReq
 import org.example.goormssd.usermanagementbackend.dto.request.PhoneVerifyRequestDto;
 import org.example.goormssd.usermanagementbackend.service.PhoneVerificationService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin(
+        origins = "http://localhost:5173",
+        allowCredentials = "true"
+)
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/auth/phone")
