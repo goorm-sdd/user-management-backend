@@ -53,13 +53,13 @@ jobs:
           script: |
             cd /home/ec2-user/app
             chmod +x deploy.sh
-            SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }} \
-            SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }} \
-            SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }} \
-            JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} \
-            MAIL_USERNAME=${{ secrets.MAIL_USERNAME }} \
-            MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }} \
-            COOLSMS_API_KEY=${{ secrets.COOLSMS_API_KEY }} \
-            COOLSMS_API_SECRET=${{ secrets.COOLSMS_API_SECRET }} \
-            COOLSMS_API_NUMBER=${{ secrets.COOLSMS_API_NUMBER }} \
+            export SPRING_DATASOURCE_URL="${{ secrets.SPRING_DATASOURCE_URL }}"
+            export SPRING_DATASOURCE_USERNAME="${{ secrets.SPRING_DATASOURCE_USERNAME }}"
+            export SPRING_DATASOURCE_PASSWORD="${{ secrets.SPRING_DATASOURCE_PASSWORD }}"
+            export JWT_SECRET_KEY="${{ secrets.JWT_SECRET_KEY }}"
+            export MAIL_USERNAME="${{ secrets.MAIL_USERNAME }}"
+            export MAIL_PASSWORD="${{ secrets.MAIL_PASSWORD }}"
+            export COOLSMS_API_KEY="${{ secrets.COOLSMS_API_KEY }}"
+            export COOLSMS_API_SECRET="${{ secrets.COOLSMS_API_SECRET }}"
+            export COOLSMS_API_NUMBER="${{ secrets.COOLSMS_API_NUMBER }}"
             ./deploy.sh

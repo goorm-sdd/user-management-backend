@@ -12,18 +12,16 @@ if [ -n "$PID" ]; then
   sleep 5
 fi
 
-# 환경 변수 등록
-export SPRING_DATASOURCE_URL="$SPRING_DATASOURCE_URL"
-export SPRING_DATASOURCE_USERNAME="$SPRING_DATASOURCE_USERNAME"
-export SPRING_DATASOURCE_PASSWORD="$SPRING_DATASOURCE_PASSWORD"
-export MAIL_USERNAME="$MAIL_USERNAME"
-export MAIL_PASSWORD="$MAIL_PASSWORD"
-export JWT_SECRET_KEY="$JWT_SECRET_KEY"
-export COOLSMS_API_KEY="$COOLSMS_API_KEY"
-export COOLSMS_API_SECRET="$COOLSMS_API_SECRET"
-export COOLSMS_API_NUMBER="$COOLSMS_API_NUMBER"
-
-# 백그라운드로 애플리케이션 실행
+# 애플리케이션 실행
 echo "Starting application..."
 nohup java \
+  -Dspring.datasource.url="$SPRING_DATASOURCE_URL" \
+  -Dspring.datasource.username="$SPRING_DATASOURCE_USERNAME" \
+  -Dspring.datasource.password="$SPRING_DATASOURCE_PASSWORD" \
+  -Dspring.mail.username="$MAIL_USERNAME" \
+  -Dspring.mail.password="$MAIL_PASSWORD" \
+  -Djwt.secret-key="$JWT_SECRET_KEY" \
+  -Dcoolsms.api.key="$COOLSMS_API_KEY" \
+  -Dcoolsms.api.secret="$COOLSMS_API_SECRET" \
+  -Dcoolsms.api.number="$COOLSMS_API_NUMBER" \
   -jar $JAR_PATH --spring.profiles.active=prod > $LOG_PATH 2>&1 &
