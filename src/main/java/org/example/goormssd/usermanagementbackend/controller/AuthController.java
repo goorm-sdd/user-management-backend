@@ -1,5 +1,6 @@
 package org.example.goormssd.usermanagementbackend.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -29,6 +30,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api") // API 버전 관리
 @RequiredArgsConstructor // Lombok, final 이나 @NonNull 필드에 대해 생성자 자동 생성
+@Tag(name = "User API", description = "일반 사용자 API")
 public class AuthController {
 
     private final AuthService authService;

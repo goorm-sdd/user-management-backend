@@ -1,5 +1,6 @@
 package org.example.goormssd.usermanagementbackend.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api") // API 버전 관리
 @RequiredArgsConstructor
+@Tag(name = "Admin API", description = "관리자 권한이 필요한 API")
 public class AuthAdminController {
 
     private final AuthAdminService adminService;

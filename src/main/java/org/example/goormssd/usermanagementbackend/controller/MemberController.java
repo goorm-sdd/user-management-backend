@@ -1,6 +1,7 @@
 package org.example.goormssd.usermanagementbackend.controller;
 
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.goormssd.usermanagementbackend.dto.request.EmailCheckRequestDto;
@@ -17,6 +18,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
+@Tag(name = "User API", description = "일반 사용자 API")
 public class MemberController {
 
     private final MemberService memberService;

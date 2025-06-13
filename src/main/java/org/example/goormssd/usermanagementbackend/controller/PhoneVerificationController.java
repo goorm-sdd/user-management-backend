@@ -1,5 +1,6 @@
 package org.example.goormssd.usermanagementbackend.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.example.goormssd.usermanagementbackend.dto.request.PhoneVerifyCodeRequestDto;
 import org.example.goormssd.usermanagementbackend.dto.request.PhoneVerifyRequestDto;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/auth/phone")
+@Tag(name = "User API", description = "일반 사용자 API")
 public class PhoneVerificationController {
 
     private final PhoneVerificationService phoneService;

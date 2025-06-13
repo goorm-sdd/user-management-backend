@@ -1,5 +1,6 @@
 package org.example.goormssd.usermanagementbackend.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.example.goormssd.usermanagementbackend.service.EmailVerificationService;
 import org.springframework.http.HttpStatus;
@@ -11,6 +12,7 @@ import java.net.URI;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
+@Tag(name = "User API", description = "일반 사용자 API")
 public class EmailVerificationController {
 
     private final EmailVerificationService emailVerificationService;

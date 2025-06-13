@@ -1,5 +1,6 @@
 package org.example.goormssd.usermanagementbackend.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.example.goormssd.usermanagementbackend.dto.response.*;
 import org.example.goormssd.usermanagementbackend.service.AdminMemberService;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/admin/users")
 @RequiredArgsConstructor
+@Tag(name = "Admin API", description = "관리자 권한이 필요한 API")
 public class AdminMemberController {
 
     private final AdminMemberService adminMemberService;
