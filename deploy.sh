@@ -1,41 +1,26 @@
 #!/bin/bash
 
-echo "[INFO] 🚀 Deploy script started."
-
-# ========================
-# 1. 환경 변수 export
-# ========================
-export SPRING_DATASOURCE_URL=$SPRING_DATASOURCE_URL
-export SPRING_DATASOURCE_USERNAME=$SPRING_DATASOURCE_USERNAME
-export SPRING_DATASOURCE_PASSWORD=$SPRING_DATASOURCE_PASSWORD
-export JWT_SECRET_KEY=$JWT_SECRET_KEY
-export COOLSMS_API_KEY=$COOLSMS_API_KEY
-export COOLSMS_API_SECRET=$COOLSMS_API_SECRET
-export COOLSMS_API_NUMBER=$COOLSMS_API_NUMBER
-export MAIL_USERNAME=$MAIL_USERNAME
-export MAIL_PASSWORD=$MAIL_PASSWORD
-
-# 확인용 출력 (민감 정보는 마스킹)
-echo "[INFO] 📦 DB URL: $SPRING_DATASOURCE_URL"
-echo "[INFO] 🔐 JWT KEY Length: ${#JWT_SECRET_KEY} characters"
-echo "[INFO] 📧 MAIL USER: $MAIL_USERNAME"
-echo "[INFO] 📱 COOLSMS KEY: $COOLSMS_API_KEY"
-
-# ========================
-# 2. 기존 프로세스 종료
-# ========================
-PID=$(pgrep -f 'user-management-backend-0.0.1-SNAPSHOT.jar')
-if [ -n "$PID" ]; then
-  echo "[INFO] 🔁 기존 프로세스 종료 중: PID $PID"
-  kill -9 $PID
-  sleep 1
+# 환경 변수 로드 (.env 파일이 존재하면)
+if [ -f .env ]; then
+  echo "📦 .env 파일을 로드합니다..."
+  export $(grep -v '^#' .env | xargs)
+else
+  echo "⚠️ .env 파일이 존재하지 않습니다. 환경 변수가 로드되지 않을 수 있습니다."
 fi
 
-# ========================
-# 3. 앱 실행
-# ========================
-echo "[INFO] 🟢 Spring Boot 앱 실행 시작..."
-nohup java -jar build/libs/user-management-backend-0.0.1-SNAPSHOT.jar \
-  --spring.profiles.active=prod > log.out 2>&1 &
+# 실행 중인 애플리케이션 종료 (PID로 찾기)
+CURRENT_PID=$(pgrep -f 'user-management-backend-0.0.1-SNAPSHOT.jar')
 
-echo "[INFO] ✅ 배포 완료! 로그 확인: tail -f /home/ec2-user/app/log.out"
+if [ -n "$CURRENT_PID" ]; then
+  echo "🛑 기존 애플리케이션 프로세스 종료: PID $CURRENT_PID"
+  kill -15 $CURRENT_PID
+  sleep 5
+else
+  echo "ℹ️ 실행 중인 애플리케이션이 없습니다."
+fi
+
+# 애플리케이션 실행
+echo "🚀 새로운 애플리케이션을 실행합니다..."
+nohup java -jar \
+  -Dspring.profiles.active=prod \
+  build/libs/user-management-backend-0.0.1-SNAPSHOT.jar > app.log 2>&1 &
