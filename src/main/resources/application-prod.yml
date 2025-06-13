@@ -27,7 +27,6 @@ spring:
 
 jwt:
   secret: ${JWT_SECRET_KEY}
-  access-token-expiration-ms: 3600000
 
 coolsms:
   api:
