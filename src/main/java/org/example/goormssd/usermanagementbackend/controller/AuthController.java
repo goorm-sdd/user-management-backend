@@ -1,5 +1,9 @@
 package org.example.goormssd.usermanagementbackend.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -29,6 +33,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api") // API 버전 관리
 @RequiredArgsConstructor // Lombok, final 이나 @NonNull 필드에 대해 생성자 자동 생성
+@Tag(name = "User API", description = "일반 사용자 API")
 public class AuthController {
 
     private final AuthService authService;
@@ -41,10 +46,17 @@ public class AuthController {
     //        this.authService = authService;
     //    }
 
+    @Operation(
+            summary = "사용자 로그인",
+            description = "이메일과 비밀번호를 통해 로그인합니다. AccessToken은 응답 바디에, RefreshToken은 쿠키에 저장됩니다.",
+            tags = {"User API"}
+    )
     @PostMapping("/auth/signin")
     public ResponseEntity<ApiResponseDto<LoginResponseDto>> login(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "로그인 요청 정보 (이메일, 비밀번호)", required = true)
             @RequestBody LoginRequestDto loginRequest,
-            HttpServletResponse response) {
+            @Parameter(hidden = true) HttpServletResponse response) {
 
         // var 사용을 통해 타입 추론을 활용할 수 있지만, 명시적인 타입 선언이 가독성에 더 좋을 수 있음
         // 팀 프로젝트에서의 중요한 로직에서는 var 사용을 지양하고, 타입을 명시하는게 좋을 수 있음
@@ -73,10 +85,16 @@ public class AuthController {
         );
     }
 
+    @Operation(
+            summary = "사용자 로그아웃",
+            description = "AccessToken 검증 후 RefreshToken을 삭제하고, 쿠키도 만료시킵니다.",
+            tags = {"User API"},
+            security = @SecurityRequirement(name = "AccessToken")
+    )
     @PostMapping("/signout")
     public ResponseEntity<ApiResponseDto<Void>> logout(
-            HttpServletRequest request,
-            HttpServletResponse response
+            @Parameter(hidden = true) HttpServletRequest request,
+            @Parameter(hidden = true) HttpServletResponse response
     ) {
 
 //        String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
@@ -147,9 +165,14 @@ public class AuthController {
         return ResponseEntity.ok(new ApiResponseDto<>(200, "Logout successful.", null));
     }
 
+    @Operation(
+            summary = "토큰 재발급",
+            description = "쿠키에 담긴 RefreshToken을 사용하여 AccessToken을 재발급합니다.",
+            tags = {"User API"}
+    )
     @PostMapping("/auth/token/refresh")
     public ResponseEntity<ApiResponseDto<RefreshTokenDto>> refreshToken(
-            HttpServletRequest request) {
+            @Parameter(hidden = true) HttpServletRequest request) {
 
         // 쿠키에서 refreshToken 추출
         String refreshToken = Arrays.stream(Optional.ofNullable(request.getCookies()).orElse(new Cookie[0]))
@@ -178,14 +201,31 @@ public class AuthController {
 
         return ResponseEntity.ok(apiResponse);
     }
+
+    @Operation(
+            summary = "이메일(아이디) 찾기",
+            description = "이름과 전화번호를 기반으로 등록된 이메일을 조회합니다.",
+            tags = {"User API"}
+    )
     @PostMapping("/auth/find/email")
-    public ResponseEntity<ApiResponseDto<FindEmailResponseDto>> findEmail(@RequestBody FindEmailRequestDto request) {
+    public ResponseEntity<ApiResponseDto<FindEmailResponseDto>> findEmail(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "이름과 전화번호", required = true)
+            @RequestBody FindEmailRequestDto request) {
         String email = authService.findEmailByUsernameAndPhone(request);
         return ResponseEntity.ok(new ApiResponseDto<>(200, "Email (ID) retrieved successfully.", new FindEmailResponseDto(email)));
     }
 
+    @Operation(
+            summary = "비밀번호 재설정",
+            description = "이메일과 이름, 전화번호를 통해 본인 확인 후 임시 비밀번호를 이메일로 발송합니다.",
+            tags = {"User API"}
+    )
     @PostMapping("/auth/find/password")
-    public ResponseEntity<ApiResponseDto<Void>> resetPassword(@RequestBody FindPasswordRequestDto request) {
+    public ResponseEntity<ApiResponseDto<Void>> resetPassword(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "이름, 이메일, 전화번호", required = true)
+            @RequestBody FindPasswordRequestDto request) {
         authService.resetPasswordAndSendEmail(request);
         return ResponseEntity.ok(new ApiResponseDto<>(200, "Temporary password has been sent via email.", null));
     }

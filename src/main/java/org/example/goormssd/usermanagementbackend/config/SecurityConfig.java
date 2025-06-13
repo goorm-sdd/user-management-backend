@@ -45,13 +45,20 @@ public class SecurityConfig {
                 // 권한 정책 정의
                 .authorizeHttpRequests(auth -> auth
                         // 인증 없이 접근 허용
-                        .requestMatchers("/api/auth/**", "/h2-console/**").permitAll()
+                        .requestMatchers("/api/auth/**",
+                                "/h2-console/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html"
+                        ).permitAll()
                         // 사용자 권한 필요
                         .requestMatchers("/api/users/**").hasAnyRole("USER", "ADMIN")
                         // 관리자 권한 필요
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         // 로그아웃은 인증된 사용자만
-                        .requestMatchers("/api/signout").authenticated()
+                        .requestMatchers("/api/signout",
+                                "/api/admin/signout"
+                        ).authenticated()
                         // 재인증 토큰 허용 엔드포인트
                         .requestMatchers(POST, "/api/users/password/verify").authenticated()
                         // 민감 작업
