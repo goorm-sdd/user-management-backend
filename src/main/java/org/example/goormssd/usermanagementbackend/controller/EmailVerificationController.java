@@ -11,6 +11,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 
+@CrossOrigin(
+        origins = "http://localhost:5173",
+        allowCredentials = "true"
+)
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
