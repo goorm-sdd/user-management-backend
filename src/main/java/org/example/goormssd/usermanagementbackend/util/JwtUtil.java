@@ -24,12 +24,26 @@ public class JwtUtil {
 
     private SecretKey secretKey;
 
+//    @PostConstruct
+//    protected void init() {
+//        // Base64 인코딩 후 Key 객체로 변환
+//        byte[] keyBytes = Base64.getDecoder().decode(secretKeyString);
+//        this.secretKey = Keys.hmacShaKeyFor(keyBytes);
+//    }
     @PostConstruct
     protected void init() {
-        // Base64 인코딩 후 Key 객체로 변환
-        byte[] keyBytes = Base64.getDecoder().decode(secretKeyString);
-        this.secretKey = Keys.hmacShaKeyFor(keyBytes);
+        if (secretKeyString == null || secretKeyString.isBlank()) {
+            throw new IllegalStateException("JWT_SECRET_KEY 환경변수가 설정되지 않았습니다.");
+        }
+        try {
+            byte[] keyBytes = Base64.getDecoder().decode(secretKeyString);
+            this.secretKey = Keys.hmacShaKeyFor(keyBytes);
+        } catch (IllegalArgumentException e) {
+            log.error("JWT 시크릿 키 디코딩 실패: {}", e.getMessage());
+            throw new IllegalStateException("유효하지 않은 JWT 시크릿 키입니다.", e);
+        }
     }
+
 
     // 토큰 생성 (사용자 이메일, 만료 시간, 토큰 타입)
     public String generateToken(String email, long expirationMs) {
