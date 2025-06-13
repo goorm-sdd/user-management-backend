@@ -2,6 +2,7 @@ package org.example.goormssd.usermanagementbackend.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,8 @@ public class PasswordController {
     @Operation(
             summary = "비밀번호 재인증",
             description = "민감한 작업(이메일 변경, 회원 탈퇴 등)을 수행하기 전, 사용자의 비밀번호를 검증하고 재인증 토큰(reauthToken)을 발급합니다.",
-            tags = {"User API"}
+            tags = {"User API"},
+            security = @SecurityRequirement(name = "AccessToken")
     )
     @PostMapping("/verify")
     public ResponseEntity<ReauthResponseDto> verifyPassword(

@@ -2,6 +2,7 @@ package org.example.goormssd.usermanagementbackend.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -70,7 +71,8 @@ public class AuthAdminController {
     @Operation(
             summary = "관리자 로그아웃",
             description = "AccessToken을 검증하고, 저장된 RefreshToken을 삭제하며 쿠키도 만료시킵니다.",
-            tags = {"Admin API"}
+            tags = {"Admin API"},
+            security = @SecurityRequirement(name = "AccessToken")
     )
     @PostMapping("/admin/signout")
     public ResponseEntity<ApiResponseDto<Void>> logout(

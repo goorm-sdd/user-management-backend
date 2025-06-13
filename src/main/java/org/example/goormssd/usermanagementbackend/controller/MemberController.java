@@ -2,6 +2,7 @@ package org.example.goormssd.usermanagementbackend.controller;
 
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -70,7 +71,8 @@ public class MemberController {
     @Operation(
             summary = "내 프로필 조회",
             description = "AccessToken을 기반으로 현재 로그인한 사용자의 프로필 정보를 조회합니다.",
-            tags = {"User API"}
+            tags = {"User API"},
+            security = @SecurityRequirement(name = "AccessToken")
     )
     @GetMapping("/users/me")
     public ResponseEntity<ApiResponseDto<MyProfileResponseDto>> getMyProfile() {
