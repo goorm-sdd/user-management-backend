@@ -19,7 +19,7 @@ import java.util.Map;
 @Component
 public class JwtUtil {
 
-    @Value("${jwt.secret}")
+    @Value("${jwt.secret-key}")
     private String secretKeyString;
 
     private SecretKey secretKey;
