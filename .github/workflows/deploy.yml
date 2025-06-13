@@ -41,6 +41,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
+          envs: SPRING_DATASOURCE_URL,SPRING_DATASOURCE_USERNAME,SPRING_DATASOURCE_PASSWORD,JWT_SECRET_KEY,COOLSMS_API_KEY,COOLSMS_API_SECRET,COOLSMS_API_NUMBER,MAIL_USERNAME,MAIL_PASSWORD
           script: |
             cd /home/ec2-user/app
             chmod +x deploy.sh
