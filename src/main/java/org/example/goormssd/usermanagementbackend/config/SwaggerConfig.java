@@ -14,12 +14,18 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI api() {
         return new OpenAPI()
-                .addSecurityItem(new SecurityRequirement().addList("JWT"))
                 .components(new Components()
                         .addSecuritySchemes("JWT", new SecurityScheme()
                                 .type(SecurityScheme.Type.HTTP)
                                 .scheme("bearer")
-                                .bearerFormat("JWT")))
+                                .bearerFormat("JWT"))
+                        .addSecuritySchemes("RefreshToken", new SecurityScheme()
+                                .name("reauthToken")  // 여기가 헤더 이름
+                                .type(SecurityScheme.Type.APIKEY)
+                                .in(SecurityScheme.In.HEADER)))
+                .addSecurityItem(new SecurityRequirement()
+                        .addList("JWT")
+                        .addList("RefreshToken"))
                 .info(new Info()
                         .title("회원 관리 서비스 API")
                         .description("Spring Boot + JWT 기반 회원관리 API 문서입니다.")
