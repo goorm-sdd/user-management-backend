@@ -22,12 +22,6 @@ public class JwtUtil {
     @Value("${jwt.secret}")
     private String secretKeyString;
 
-    @Value("${jwt.access-token-expiration-ms:3600000}") // 기본 1시간
-    private long accessTokenExpiration;
-
-    @Value("${jwt.refresh-token-expiration-ms:604800000}") // 기본 7일
-    private long refreshTokenExpiration;
-
     private SecretKey secretKey;
 
     @PostConstruct
@@ -48,11 +42,15 @@ public class JwtUtil {
     }
 
     public String generateAccessToken(String email) {
+        // 1시간
+        long accessTokenExpiration = 3600000L;
         return generateToken(email, accessTokenExpiration);
     }
 
     // RefreshToken 생성 (7일)
     public String generateRefreshToken(String email) {
+        // 7일
+        long refreshTokenExpiration = 604800000L;
         return generateToken(email, refreshTokenExpiration);
     }
 
