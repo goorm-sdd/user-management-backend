@@ -26,18 +26,6 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew clean build -x test
 
-      - name: Create .env file from secrets
-        run: |
-          echo "SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }}" >> .env
-          echo "SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }}" >> .env
-          echo "SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }}" >> .env
-          echo "JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}" >> .env
-          echo "MAIL_USERNAME=${{ secrets.MAIL_USERNAME }}" >> .env
-          echo "MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}" >> .env
-          echo "COOLSMS_API_KEY=${{ secrets.COOLSMS_API_KEY }}" >> .env
-          echo "COOLSMS_API_SECRET=${{ secrets.COOLSMS_API_SECRET }}" >> .env
-          echo "COOLSMS_API_NUMBER=${{ secrets.COOLSMS_API_NUMBER }}" >> .env
-
       - name: Copy jar to EC2
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -47,18 +35,16 @@ jobs:
           source: "build/libs/user-management-backend-0.0.1-SNAPSHOT.jar"
           target: "/home/ec2-user/app/build/libs"
 
-      - name: Upload deploy.sh and .env
+      - name: Upload deploy.sh
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
-          source: |
-            ./deploy.sh
-            .env
+          source: "deploy.sh"
           target: "/home/ec2-user/app"
 
-      - name: Run deploy.sh on EC2
+      - name: Run deploy.sh on EC2 with secrets
         uses: appleboy/ssh-action@v0.1.8
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -67,4 +53,13 @@ jobs:
           script: |
             cd /home/ec2-user/app
             chmod +x deploy.sh
+            SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }} \
+            SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }} \
+            SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }} \
+            JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} \
+            MAIL_USERNAME=${{ secrets.MAIL_USERNAME }} \
+            MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }} \
+            COOLSMS_API_KEY=${{ secrets.COOLSMS_API_KEY }} \
+            COOLSMS_API_SECRET=${{ secrets.COOLSMS_API_SECRET }} \
+            COOLSMS_API_NUMBER=${{ secrets.COOLSMS_API_NUMBER }} \
             ./deploy.sh
