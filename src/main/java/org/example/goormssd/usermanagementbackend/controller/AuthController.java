@@ -18,7 +18,7 @@ import org.example.goormssd.usermanagementbackend.dto.response.LoginResponseDto;
 import org.example.goormssd.usermanagementbackend.dto.response.RefreshTokenDto;
 import org.example.goormssd.usermanagementbackend.service.AuthService;
 import org.example.goormssd.usermanagementbackend.service.dto.LoginResult;
-import org.example.goormssd.usermanagementbackend.util.JwtUtil;
+import org.example.goormssd.usermanagementbackend.config.security.JwtUtil;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;

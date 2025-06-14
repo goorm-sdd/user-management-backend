@@ -1,4 +1,4 @@
-package org.example.goormssd.usermanagementbackend.util;
+package org.example.goormssd.usermanagementbackend.config.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
