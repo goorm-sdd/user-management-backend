@@ -3,6 +3,7 @@ package org.example.goormssd.usermanagementbackend.config;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.goormssd.usermanagementbackend.security.CustomUserDetailsService;
 import org.example.goormssd.usermanagementbackend.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,9 +34,13 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtFilter;
 
+    private final CustomUserDetailsService userDetailsService;
+
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                .userDetailsService(userDetailsService)
                 .cors(Customizer.withDefaults())
                 // CSRF 비활성화: JWT 사용 시 세션 상태 없음
                 .csrf(AbstractHttpConfigurer::disable)
