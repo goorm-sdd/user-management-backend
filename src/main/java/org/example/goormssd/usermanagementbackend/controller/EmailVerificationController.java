@@ -18,7 +18,6 @@ import java.net.URI;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-@Tag(name = "User API", description = "일반 사용자 API")
 public class EmailVerificationController {
 
     private final EmailVerificationService emailVerificationService;
@@ -27,7 +26,7 @@ public class EmailVerificationController {
     @Operation(
             summary = "이메일 인증 처리",
             description = "사용자가 이메일로 받은 인증 링크를 클릭하면 호출되는 API입니다. 이메일 인증 코드를 검증한 후 프론트엔드로 리디렉션됩니다.",
-            tags = {"User API"}
+            tags = { "Auth" }
     )
     @GetMapping("/email/verify")
     public ResponseEntity<String> verifyEmail(

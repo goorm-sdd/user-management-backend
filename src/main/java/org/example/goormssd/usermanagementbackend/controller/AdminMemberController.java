@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/admin/users")
 @RequiredArgsConstructor
-@Tag(name = "Admin API", description = "관리자 권한이 필요한 API")
 @SecurityRequirement(name = "JWT")
 public class AdminMemberController {
 
@@ -30,7 +29,7 @@ public class AdminMemberController {
     @Operation(
             summary = "대시보드 조회",
             description = "전체 회원, 탈퇴 회원 수를 포함한 관리자용 대시보드 데이터를 조회합니다.",
-            tags = {"Admin API"},
+            tags = { "Admin" },
             security = @SecurityRequirement(name = "AccessToken")
     )
     @GetMapping("/dashboard")
@@ -59,7 +58,7 @@ public class AdminMemberController {
     @Operation(
             summary = "전체 회원 조회",
             description = "가입된 전체 회원 목록을 페이징, 정렬 기준에 따라 조회합니다.",
-            tags = {"Admin API"},
+            tags = { "Not Used" },
             security = @SecurityRequirement(name = "AccessToken")
     )
     @GetMapping
@@ -86,7 +85,7 @@ public class AdminMemberController {
     @Operation(
             summary = "탈퇴 회원 조회",
             description = "삭제(deleted) 상태인 회원 목록을 조회합니다.",
-            tags = {"Admin API"},
+            tags = { "Not Used" },
             security = @SecurityRequirement(name = "AccessToken")
     )
     @GetMapping("/deleted")
@@ -113,7 +112,7 @@ public class AdminMemberController {
     @Operation(
             summary = "이메일 미인증 회원 조회",
             description = "이메일 인증이 완료되지 않은 회원 목록을 조회합니다.",
-            tags = {"Admin API"},
+            tags = { "Not Used" },
             security = @SecurityRequirement(name = "AccessToken")
     )
     @GetMapping("/unverified")
@@ -140,7 +139,7 @@ public class AdminMemberController {
     @Operation(
             summary = "회원 상세 정보 조회",
             description = "회원 ID를 기반으로 해당 사용자의 상세 정보를 조회합니다.",
-            tags = {"Admin API"},
+            tags = { "Admin" },
             security = @SecurityRequirement(name = "AccessToken")
     )
     @GetMapping("/{id}")
@@ -156,7 +155,7 @@ public class AdminMemberController {
     @Operation(
             summary = "회원 검색",
             description = "회원의 이메일 또는 사용자 이름으로 검색합니다. 두 항목을 동시에 사용할 수 없습니다.",
-            tags = {"Admin API"},
+            tags = { "Admin" },
             security = @SecurityRequirement(name = "AccessToken")
     )
     @GetMapping("/search")
@@ -205,7 +204,9 @@ public class AdminMemberController {
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(
             summary = "회원 상태 변경 (ADMIN)",
-            description = "관리자가 회원의 상태를 변경합니다. 'active' 또는 'deleted' 중 하나를 입력해야 합니다."
+            description = "관리자가 회원의 상태를 변경합니다. 'active' 또는 'deleted' 중 하나를 입력해야 합니다.",
+            tags = { "Admin" },
+            security = @SecurityRequirement(name = "AccessToken")
     )
     public ResponseEntity<ApiResponseDto<Void>> updateUserStatus(
             @Parameter(description = "회원 ID", example = "1")

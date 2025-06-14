@@ -37,7 +37,6 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api") // API 버전 관리
 @RequiredArgsConstructor // Lombok, final 이나 @NonNull 필드에 대해 생성자 자동 생성
-@Tag(name = "User API", description = "일반 사용자 API")
 public class AuthController {
 
     private final AuthService authService;
@@ -53,7 +52,7 @@ public class AuthController {
     @Operation(
             summary = "사용자 로그인",
             description = "이메일과 비밀번호를 통해 로그인합니다. AccessToken은 응답 바디에, RefreshToken은 쿠키에 저장됩니다.",
-            tags = {"User API"}
+            tags = { "Auth" }
     )
     @PostMapping("/auth/signin")
     public ResponseEntity<ApiResponseDto<LoginResponseDto>> login(
@@ -92,7 +91,7 @@ public class AuthController {
     @Operation(
             summary = "사용자 로그아웃",
             description = "AccessToken 검증 후 RefreshToken을 삭제하고, 쿠키도 만료시킵니다.",
-            tags = {"User API"},
+            tags = { "Auth" },
             security = @SecurityRequirement(name = "AccessToken")
     )
     @PostMapping("/signout")
@@ -172,7 +171,7 @@ public class AuthController {
     @Operation(
             summary = "토큰 재발급",
             description = "쿠키에 담긴 RefreshToken을 사용하여 AccessToken을 재발급합니다.",
-            tags = {"User API"}
+            tags = { "Auth" }
     )
     @PostMapping("/auth/token/refresh")
     public ResponseEntity<ApiResponseDto<RefreshTokenDto>> refreshToken(
@@ -209,7 +208,7 @@ public class AuthController {
     @Operation(
             summary = "이메일(아이디) 찾기",
             description = "이름과 전화번호를 기반으로 등록된 이메일을 조회합니다.",
-            tags = {"User API"}
+            tags = { "Auth" }
     )
     @PostMapping("/auth/find/email")
     public ResponseEntity<ApiResponseDto<FindEmailResponseDto>> findEmail(
@@ -223,7 +222,7 @@ public class AuthController {
     @Operation(
             summary = "비밀번호 재설정",
             description = "이메일과 이름, 전화번호를 통해 본인 확인 후 임시 비밀번호를 이메일로 발송합니다.",
-            tags = {"User API"}
+            tags = { "Auth" }
     )
     @PostMapping("/auth/find/password")
     public ResponseEntity<ApiResponseDto<Void>> resetPassword(

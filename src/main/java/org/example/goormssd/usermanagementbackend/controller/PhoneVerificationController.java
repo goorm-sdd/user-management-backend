@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/auth/phone")
-@Tag(name = "User API", description = "일반 사용자 API")
 public class PhoneVerificationController {
 
     private final PhoneVerificationService phoneService;
@@ -24,7 +23,7 @@ public class PhoneVerificationController {
     @Operation(
             summary = "휴대폰 인증번호 발송",
             description = "입력한 전화번호로 인증번호를 문자로 발송합니다.",
-            tags = {"User API"}
+            tags = { "Auth" }
     )
     @PostMapping("/send")
     public ResponseEntity<?> sendCode(
@@ -39,7 +38,7 @@ public class PhoneVerificationController {
     @Operation(
             summary = "휴대폰 인증번호 확인",
             description = "입력한 전화번호와 인증번호를 비교하여 인증을 완료합니다.",
-            tags = {"User API"}
+            tags = { "Auth" }
     )
     @PostMapping("/verify")
     public ResponseEntity<?> verifyCode(
