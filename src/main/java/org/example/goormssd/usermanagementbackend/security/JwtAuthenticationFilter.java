@@ -1,4 +1,4 @@
-package org.example.goormssd.usermanagementbackend.config.security;
+package org.example.goormssd.usermanagementbackend.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
