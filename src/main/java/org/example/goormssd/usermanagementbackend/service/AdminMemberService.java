@@ -243,4 +243,20 @@ public class AdminMemberService {
                 page.getTotalElements()
         );
     }
+
+
+    public void updateStatus(Long id, String status) {
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 회원이 존재하지 않습니다."));
+
+        if ("active".equalsIgnoreCase(status)) {
+            member.setStatus(Member.Status.ACTIVE);
+        } else if ("deleted".equalsIgnoreCase(status)) {
+            member.setStatus(Member.Status.DELETED);
+        } else {
+            throw new IllegalArgumentException("Invalid status value. Must be 'active' or 'deleted'.");
+        }
+
+        memberRepository.save(member);
+    }
 }

@@ -3,7 +3,6 @@ package org.example.goormssd.usermanagementbackend.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -29,7 +28,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api") // API 버전 관리
 @RequiredArgsConstructor
-@Tag(name = "Admin API", description = "관리자 권한이 필요한 API")
 public class AuthAdminController {
 
     private final AuthAdminService adminService;
@@ -39,7 +37,7 @@ public class AuthAdminController {
     @Operation(
             summary = "관리자 로그인",
             description = "관리자가 이메일과 비밀번호로 로그인하면 AccessToken은 바디로, RefreshToken은 쿠키로 발급됩니다.",
-            tags = {"Admin API"}
+            tags = { "Admin" }
     )
     @PostMapping("/auth/admin/signin")
     public ResponseEntity<ApiResponseDto<LoginResponseDto>> login(
@@ -72,7 +70,7 @@ public class AuthAdminController {
     @Operation(
             summary = "관리자 로그아웃",
             description = "AccessToken을 검증하고, 저장된 RefreshToken을 삭제하며 쿠키도 만료시킵니다.",
-            tags = {"Admin API"},
+            tags = { "Admin" },
             security = @SecurityRequirement(name = "AccessToken")
     )
     @PostMapping("/admin/signout")
