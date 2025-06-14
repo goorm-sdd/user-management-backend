@@ -1,6 +1,7 @@
 package org.example.goormssd.usermanagementbackend.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.example.goormssd.usermanagementbackend.dto.request.PhoneVerifyCodeRequestDto;
 import org.example.goormssd.usermanagementbackend.dto.request.PhoneVerifyRequestDto;
@@ -21,9 +22,9 @@ public class PhoneVerificationController {
 
     @Operation(
             summary = "휴대폰 인증번호 발송",
-            description = "입력한 전화번호로 인증번호를 문자로 발송합니다.",
-            tags = { "Auth" }
+            description = "입력한 전화번호로 인증번호를 문자로 발송합니다."
     )
+    @Tag(name = "인증 API", description = "회원가입, 로그인, 인증 관련 API입니다.")
     @PostMapping("/send")
     public ResponseEntity<?> sendCode(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -36,9 +37,9 @@ public class PhoneVerificationController {
 
     @Operation(
             summary = "휴대폰 인증번호 확인",
-            description = "입력한 전화번호와 인증번호를 비교하여 인증을 완료합니다.",
-            tags = { "Auth" }
+            description = "입력한 전화번호와 인증번호를 비교하여 인증을 완료합니다."
     )
+    @Tag(name = "인증 API", description = "회원가입, 로그인, 인증 관련 API입니다.")
     @PostMapping("/verify")
     public ResponseEntity<?> verifyCode(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(

@@ -3,6 +3,7 @@ package org.example.goormssd.usermanagementbackend.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.goormssd.usermanagementbackend.dto.request.EmailCheckRequestDto;
@@ -29,9 +30,9 @@ public class MemberController {
 
     @Operation(
             summary = "회원가입",
-            description = "이메일, 비밀번호, 사용자 이름 등의 정보를 입력받아 회원가입을 처리합니다. 이메일 인증도 함께 처리됩니다.",
-            tags = { "Auth" }
+            description = "이메일, 비밀번호, 사용자 이름 등의 정보를 입력받아 회원가입을 처리합니다. 이메일 인증도 함께 처리됩니다."
     )
+    @Tag(name = "인증 API", description = "회원가입, 로그인, 인증 관련 API입니다.")
     @PostMapping("/auth/signup")
     public ResponseEntity<String> signup(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -46,9 +47,9 @@ public class MemberController {
 
     @Operation(
             summary = "이메일 중복 확인",
-            description = "입력한 이메일이 이미 가입된 이메일인지 확인합니다.",
-            tags = { "Auth" }
+            description = "입력한 이메일이 이미 가입된 이메일인지 확인합니다."
     )
+    @Tag(name = "인증 API", description = "회원가입, 로그인, 인증 관련 API입니다.")
     @PostMapping("/auth/email")
     public ResponseEntity<Map<String, Object>> checkEmailDuplicate(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -73,9 +74,9 @@ public class MemberController {
     @Operation(
             summary = "내 프로필 조회",
             description = "AccessToken을 기반으로 현재 로그인한 사용자의 프로필 정보를 조회합니다.",
-            tags = { "User" },
             security = @SecurityRequirement(name = "AccessToken")
     )
+    @Tag(name = "회원 API", description = "일반 회원 기능 관련 API입니다.")
     @GetMapping("/users/me")
     public ResponseEntity<ApiResponseDto<MyProfileResponseDto>> getMyProfile() {
 
