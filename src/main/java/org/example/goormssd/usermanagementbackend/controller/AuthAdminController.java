@@ -21,10 +21,10 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-//@CrossOrigin(
-//        origins = "http://localhost:5173",
-//        allowCredentials = "true"
-//)
+@CrossOrigin(
+        origins = "http://localhost:5173",
+        allowCredentials = "true"
+)
 @Slf4j
 @RestController
 @RequestMapping("/api") // API 버전 관리

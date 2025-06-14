@@ -15,10 +15,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-//@CrossOrigin(
-//        origins = "http://localhost:5173",
-//        allowCredentials = "true"
-//)
+@CrossOrigin(
+        origins = "http://localhost:5173",
+        allowCredentials = "true"
+)
 @RestController
 @RequestMapping("/api/users/password")
 @RequiredArgsConstructor
