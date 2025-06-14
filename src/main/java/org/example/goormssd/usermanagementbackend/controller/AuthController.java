@@ -3,6 +3,7 @@ package org.example.goormssd.usermanagementbackend.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -50,9 +51,9 @@ public class AuthController {
 
     @Operation(
             summary = "사용자 로그인",
-            description = "이메일과 비밀번호를 통해 로그인합니다. AccessToken은 응답 바디에, RefreshToken은 쿠키에 저장됩니다.",
-            tags = { "Auth" }
+            description = "이메일과 비밀번호를 통해 로그인합니다. AccessToken은 응답 바디에, RefreshToken은 쿠키에 저장됩니다."
     )
+    @Tag(name = "인증 API", description = "회원가입, 로그인, 인증 관련 API입니다.")
     @PostMapping("/auth/signin")
     public ResponseEntity<ApiResponseDto<LoginResponseDto>> login(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -90,9 +91,9 @@ public class AuthController {
     @Operation(
             summary = "사용자 로그아웃",
             description = "AccessToken 검증 후 RefreshToken을 삭제하고, 쿠키도 만료시킵니다.",
-            tags = { "Auth" },
             security = @SecurityRequirement(name = "AccessToken")
     )
+    @Tag(name = "인증 API", description = "회원가입, 로그인, 인증 관련 API입니다.")
     @PostMapping("/signout")
     public ResponseEntity<ApiResponseDto<Void>> logout(
             @Parameter(hidden = true) HttpServletRequest request,
@@ -169,9 +170,9 @@ public class AuthController {
 
     @Operation(
             summary = "토큰 재발급",
-            description = "쿠키에 담긴 RefreshToken을 사용하여 AccessToken을 재발급합니다.",
-            tags = { "Auth" }
+            description = "쿠키에 담긴 RefreshToken을 사용하여 AccessToken을 재발급합니다."
     )
+    @Tag(name = "인증 API", description = "회원가입, 로그인, 인증 관련 API입니다.")
     @PostMapping("/auth/token/refresh")
     public ResponseEntity<ApiResponseDto<RefreshTokenDto>> refreshToken(
             @Parameter(hidden = true) HttpServletRequest request) {
@@ -206,9 +207,9 @@ public class AuthController {
 
     @Operation(
             summary = "이메일(아이디) 찾기",
-            description = "이름과 전화번호를 기반으로 등록된 이메일을 조회합니다.",
-            tags = { "Auth" }
+            description = "이름과 전화번호를 기반으로 등록된 이메일을 조회합니다."
     )
+    @Tag(name = "인증 API", description = "회원가입, 로그인, 인증 관련 API입니다.")
     @PostMapping("/auth/find/email")
     public ResponseEntity<ApiResponseDto<FindEmailResponseDto>> findEmail(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -220,9 +221,9 @@ public class AuthController {
 
     @Operation(
             summary = "비밀번호 재설정",
-            description = "이메일과 이름, 전화번호를 통해 본인 확인 후 임시 비밀번호를 이메일로 발송합니다.",
-            tags = { "Auth" }
+            description = "이메일과 이름, 전화번호를 통해 본인 확인 후 임시 비밀번호를 이메일로 발송합니다."
     )
+    @Tag(name = "인증 API", description = "회원가입, 로그인, 인증 관련 API입니다.")
     @PostMapping("/auth/find/password")
     public ResponseEntity<ApiResponseDto<Void>> resetPassword(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(

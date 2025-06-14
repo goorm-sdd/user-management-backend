@@ -1,6 +1,5 @@
 package org.example.goormssd.usermanagementbackend.config;
 
-import io.swagger.v3.oas.models.tags.Tag;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
@@ -30,10 +29,6 @@ public class SwaggerConfig {
                 .info(new Info()
                         .title("회원 관리 서비스 API")
                         .description("Spring Boot + JWT 기반 회원관리 API 문서입니다.")
-                        .version("v1.0"))
-                .addTagsItem(new Tag().name("Auth").description("인증 관련 API"))
-                .addTagsItem(new Tag().name("User").description("회원 관련 API"))
-                .addTagsItem(new Tag().name("Admin").description("관리자 전용 API"))
-                .addTagsItem(new Tag().name("Not Used").description("현재 프론트에서 사용하지 않지만 참고용으로 유지되는 API"));
+                        .version("v1.0"));
     }
 }

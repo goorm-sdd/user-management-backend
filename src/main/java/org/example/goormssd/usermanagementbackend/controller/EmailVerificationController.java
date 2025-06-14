@@ -2,6 +2,7 @@ package org.example.goormssd.usermanagementbackend.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.example.goormssd.usermanagementbackend.service.EmailVerificationService;
 import org.springframework.http.HttpStatus;
@@ -24,9 +25,9 @@ public class EmailVerificationController {
     // 이메일 인증 링크 클릭 시 호출되는 API
     @Operation(
             summary = "이메일 인증 처리",
-            description = "사용자가 이메일로 받은 인증 링크를 클릭하면 호출되는 API입니다. 이메일 인증 코드를 검증한 후 프론트엔드로 리디렉션됩니다.",
-            tags = { "Auth" }
+            description = "사용자가 이메일로 받은 인증 링크를 클릭하면 호출되는 API입니다. 이메일 인증 코드를 검증한 후 프론트엔드로 리디렉션됩니다."
     )
+    @Tag(name = "인증 API", description = "회원가입, 로그인, 인증 관련 API입니다.")
     @GetMapping("/email/verify")
     public ResponseEntity<String> verifyEmail(
             @Parameter(description = "이메일 인증 코드", example = "a1b2c3d4e5")
