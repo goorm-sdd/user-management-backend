@@ -27,15 +27,8 @@ public class CustomUserDetailsService implements UserDetailsService {
                     return new UsernameNotFoundException("사용자를 찾을 수 없습니다.");
                 });
 
-        // "ROLE_" 접두어는 Spring Security 권한 필수 형식
-        String roleName = "ROLE_" + member.getRole().name();
-        log.debug("Assign role {} to user {}", roleName, email);
+        log.debug("Loaded user: {}, role: {}", email, member.getRole());
 
-
-        return org.springframework.security.core.userdetails.User.builder()
-                .username(member.getEmail())
-                .password(member.getPassword())
-                .authorities(List.of(new SimpleGrantedAuthority(roleName)))
-                .build();
+        return new UserDetailsImpl(member);
     }
 }
