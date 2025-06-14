@@ -1,20 +1,30 @@
 #!/bin/bash
 
 APP_NAME=user-management-backend
-JAR_PATH=build/libs/user-management-backend-0.0.1-SNAPSHOT.jar
+JAR_DIR=build/libs
+JAR_NAME=user-management-backend-0.0.1-SNAPSHOT.jar
+JAR_PATH=$JAR_DIR/$JAR_NAME
 LOG_PATH=app.log
 
-# 기존 실행 중인 프로세스 종료
-PID=$(pgrep -f $APP_NAME)
+# 1. 실행 중인 프로세스 종료
+PID=$(pgrep -f $JAR_NAME)
 if [ -n "$PID" ]; then
-  echo "Stopping running process: $PID"
-  kill -15 $PID
+  echo "🛑 Stopping running process: $PID"
+  kill -15 "$PID"
   sleep 5
 fi
 
-# 애플리케이션 실행
-echo "Starting application..."
+# 2. JAR 파일 존재 여부 확인
+if [ ! -f "$JAR_PATH" ]; then
+  echo -e "\033[0;31m❌ JAR 파일이 존재하지 않습니다: $JAR_PATH\033[0m"
+  echo "🔍 CI/CD에서 JAR 복사 확인 필요"
+  exit 1
+fi
+
+# 3. 애플리케이션 실행
+echo "🚀 Starting application at $(date '+%Y-%m-%d %H:%M:%S') ..." >> "$LOG_PATH"
 nohup java \
+  -Duser.timezone=Asia/Seoul \
   -Dspring.datasource.url="$SPRING_DATASOURCE_URL" \
   -Dspring.datasource.username="$SPRING_DATASOURCE_USERNAME" \
   -Dspring.datasource.password="$SPRING_DATASOURCE_PASSWORD" \
@@ -24,4 +34,6 @@ nohup java \
   -Dcoolsms.api.key="$COOLSMS_API_KEY" \
   -Dcoolsms.api.secret="$COOLSMS_API_SECRET" \
   -Dcoolsms.api.number="$COOLSMS_API_NUMBER" \
-  -jar $JAR_PATH --spring.profiles.active=prod > $LOG_PATH 2>&1 &
+  -jar "$JAR_PATH" --spring.profiles.active=prod >> "$LOG_PATH" 2>&1 &
+
+echo "✅ 배포 스크립트 완료. 로그 확인: tail -f $LOG_PATH"
