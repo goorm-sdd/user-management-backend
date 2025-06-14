@@ -10,7 +10,7 @@ import org.example.goormssd.usermanagementbackend.dto.request.PhoneVerifyCodeReq
 import org.example.goormssd.usermanagementbackend.dto.response.LoginUserDto;
 import org.example.goormssd.usermanagementbackend.repository.MemberRepository;
 import org.example.goormssd.usermanagementbackend.repository.TokenRepository;
-import org.example.goormssd.usermanagementbackend.service.dto.LoginResult;
+import org.example.goormssd.usermanagementbackend.dto.response.LoginResult;
 import org.example.goormssd.usermanagementbackend.config.security.JwtUtil;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
