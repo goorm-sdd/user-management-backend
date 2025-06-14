@@ -24,4 +24,21 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     Page<Member> findByUsernameContainingIgnoreCase(String username, Pageable pageable);
 
+    Page<Member> findByEmailContainingIgnoreCaseAndEmailVerifiedAndStatus(String email, Boolean emailVerified, Member.Status statusEnum, Pageable pageable);
+
+    Page<Member> findByEmailContainingIgnoreCaseAndEmailVerified(String email, Boolean emailVerified, Pageable pageable);
+
+    Page<Member> findByEmailContainingIgnoreCaseAndStatus(String email, Member.Status statusEnum, Pageable pageable);
+
+    Page<Member> findByUsernameContainingIgnoreCaseAndEmailVerifiedAndStatus(String username, Boolean emailVerified, Member.Status statusEnum, Pageable pageable);
+
+    Page<Member> findByUsernameContainingIgnoreCaseAndEmailVerified(String username, Boolean emailVerified, Pageable pageable);
+
+    Page<Member> findByUsernameContainingIgnoreCaseAndStatus(String username, Member.Status statusEnum, Pageable pageable);
+
+    Page<Member> findByEmailVerifiedAndStatus(Boolean emailVerified, Member.Status statusEnum, Pageable pageable);
+
+    Page<Member> findByEmailVerified(Boolean emailVerified, Pageable pageable);
+
+    Page<Member> findByStatus(Member.Status statusEnum, Pageable pageable);
 }

@@ -166,7 +166,13 @@ public class AdminMemberController {
             @RequestParam(name = "sortBy", defaultValue = "createdAt") String sortBy,
 
             @Parameter(description = "정렬 방향 (asc 또는 desc)", example = "desc")
-            @RequestParam(name = "sortDir", defaultValue = "desc") String sortDir
+            @RequestParam(name = "sortDir", defaultValue = "desc") String sortDir,
+
+            @Parameter(description = "이메일 인증 여부 (true/false)", example = "true")
+            @RequestParam(name = "emailVerified", required = false) Boolean emailVerified,
+
+            @Parameter(description = "회원 상태 (active/deleted)", example = "active")
+            @RequestParam(name = "status", required = false) String status
     ) {
         // email과 username 동시 사용 제한
         if (email != null && username != null) {
@@ -175,7 +181,9 @@ public class AdminMemberController {
             );
         }
 
-        MemberListResponseDto dto = adminMemberService.searchMembers(email, username, pageNum, pageLimit, sortBy, sortDir);
+        MemberListResponseDto dto = adminMemberService.searchMembers(
+                email, username, pageNum, pageLimit, sortBy, sortDir, emailVerified, status
+        );
         return ResponseEntity.ok(
                 ApiResponseDto.of(200, "회원 검색 성공", dto)
         );
