@@ -1,4 +1,4 @@
-package org.example.goormssd.usermanagementbackend.util;
+package org.example.goormssd.usermanagementbackend.config.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.goormssd.usermanagementbackend.service.CustomUserDetailsService;
+import org.example.goormssd.usermanagementbackend.util.JwtUtil;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
