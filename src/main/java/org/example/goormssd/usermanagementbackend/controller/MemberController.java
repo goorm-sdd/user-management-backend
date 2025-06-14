@@ -104,6 +104,7 @@ public class MemberController {
             description = "재인증 토큰(reauthToken)으로 인증된 사용자의 비밀번호를 변경합니다.",
             security = @SecurityRequirement(name = "ReauthToken")
     )
+    @Tag(name = "회원 API", description = "일반 회원 기능 관련 API입니다.")
     public ResponseEntity<ApiResponseDto<Void>> updatePassword(
             @Valid @RequestBody UpdatePasswordRequestDto requestDto,
             @Parameter(hidden = true) Authentication authentication
