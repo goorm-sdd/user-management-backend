@@ -9,10 +9,10 @@ import org.example.goormssd.usermanagementbackend.service.PhoneVerificationServi
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-//@CrossOrigin(
-//        origins = "http://localhost:5173",
-//        allowCredentials = "true"
-//)
+@CrossOrigin(
+        origins = "http://localhost:5173",
+        allowCredentials = "true"
+)
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/auth/phone")
