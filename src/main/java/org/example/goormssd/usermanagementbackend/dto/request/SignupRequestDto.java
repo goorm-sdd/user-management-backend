@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
-import org.example.goormssd.usermanagementbackend.util.NoTripleRepeat;
+import org.example.goormssd.usermanagementbackend.config.validator.NoTripleRepeat;
 
 @Getter
 @Setter

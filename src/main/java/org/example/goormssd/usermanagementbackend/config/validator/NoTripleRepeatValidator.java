@@ -1,9 +1,9 @@
-package org.example.goormssd.usermanagementbackend.util;
+package org.example.goormssd.usermanagementbackend.config.validator;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-public class NoTripleRepeatValidator implements ConstraintValidator<org.example.goormssd.usermanagementbackend.util.NoTripleRepeat, String> {
+public class NoTripleRepeatValidator implements ConstraintValidator<NoTripleRepeat, String> {
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
