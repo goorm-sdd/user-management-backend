@@ -50,7 +50,7 @@ dependencies {
     runtimeOnly 'com.mysql:mysql-connector-j' // MySQL 드라이버, 실제 운영 DB용
 
     // Swagger/OpenAPI 문서화
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
 
     // coolsms (Coolsms API)
     implementation 'net.nurigo:sdk:4.3.2'
