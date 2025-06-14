@@ -1,4 +1,4 @@
-package org.example.goormssd.usermanagementbackend.config.validator;
+package org.example.goormssd.usermanagementbackend.validation;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
