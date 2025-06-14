@@ -170,18 +170,56 @@ public class AdminMemberService {
         );
     }
 
-    public MemberListResponseDto searchMembers(String email, String username, int pageNum, int pageLimit, String sortBy, String sortDir) {
+    public MemberListResponseDto searchMembers(
+            String email, String username,
+            int pageNum, int pageLimit,
+            String sortBy, String sortDir,
+            Boolean emailVerified, String status
+    ) {
         Sort.Direction direction = Sort.Direction.fromString(sortDir);
         Pageable pageable = PageRequest.of(pageNum - 1, pageLimit, Sort.by(direction, sortBy));
 
         Page<Member> page;
 
+        Member.Status statusEnum = null;
+        if (status != null && !status.isBlank()) {
+            try {
+                statusEnum = Member.Status.valueOf(status.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("잘못된 status 값입니다. (active 또는 deleted)");
+            }
+        }
+
         if (email != null && !email.isBlank()) {
-            page = memberRepository.findByEmailContainingIgnoreCase(email, pageable);
+            if (emailVerified != null && statusEnum != null) {
+                page = memberRepository.findByEmailContainingIgnoreCaseAndEmailVerifiedAndStatus(email, emailVerified, statusEnum, pageable);
+            } else if (emailVerified != null) {
+                page = memberRepository.findByEmailContainingIgnoreCaseAndEmailVerified(email, emailVerified, pageable);
+            } else if (statusEnum != null) {
+                page = memberRepository.findByEmailContainingIgnoreCaseAndStatus(email, statusEnum, pageable);
+            } else {
+                page = memberRepository.findByEmailContainingIgnoreCase(email, pageable);
+            }
         } else if (username != null && !username.isBlank()) {
-            page = memberRepository.findByUsernameContainingIgnoreCase(username, pageable);
+            if (emailVerified != null && statusEnum != null) {
+                page = memberRepository.findByUsernameContainingIgnoreCaseAndEmailVerifiedAndStatus(username, emailVerified, statusEnum, pageable);
+            } else if (emailVerified != null) {
+                page = memberRepository.findByUsernameContainingIgnoreCaseAndEmailVerified(username, emailVerified, pageable);
+            } else if (statusEnum != null) {
+                page = memberRepository.findByUsernameContainingIgnoreCaseAndStatus(username, statusEnum, pageable);
+            } else {
+                page = memberRepository.findByUsernameContainingIgnoreCase(username, pageable);
+            }
         } else {
-            page = memberRepository.findAll(pageable);
+            if (emailVerified != null && statusEnum != null) {
+                page = memberRepository.findByEmailVerifiedAndStatus(emailVerified, statusEnum, pageable);
+            } else if (emailVerified != null) {
+                page = memberRepository.findByEmailVerified(emailVerified, pageable);
+            } else if (statusEnum != null) {
+                page = memberRepository.findByStatus(statusEnum, pageable);
+            } else {
+                page = memberRepository.findAll(pageable);
+            }
         }
 
         List<MemberResponseDto> users = page.getContent().stream()
