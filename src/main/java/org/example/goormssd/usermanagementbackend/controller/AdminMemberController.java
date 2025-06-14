@@ -17,10 +17,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin(
-        origins = "http://localhost:5173",
-        allowCredentials = "true"
-)
+//@CrossOrigin(
+//        origins = "http://localhost:5173",
+//        allowCredentials = "true"
+//)
 @RestController
 @RequestMapping("/api/admin/users")
 @RequiredArgsConstructor
