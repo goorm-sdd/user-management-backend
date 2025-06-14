@@ -75,4 +75,8 @@ public class Member {
         }
     }
 
+    public void updatePassword(String encodedPassword) {
+        this.password = encodedPassword;
+    }
+
 }
