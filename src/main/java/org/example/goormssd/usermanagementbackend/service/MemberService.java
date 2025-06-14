@@ -3,12 +3,14 @@ package org.example.goormssd.usermanagementbackend.service;
 import lombok.RequiredArgsConstructor;
 import org.example.goormssd.usermanagementbackend.domain.Member;
 import org.example.goormssd.usermanagementbackend.dto.request.SignupRequestDto;
+import org.example.goormssd.usermanagementbackend.dto.request.UpdatePasswordRequestDto;
 import org.example.goormssd.usermanagementbackend.dto.response.MyProfileResponseDto;
 import org.example.goormssd.usermanagementbackend.repository.MemberRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -75,5 +77,23 @@ public class MemberService {
                 member.getPhoneNumber(),
                 member.getPassword() // 실제로는 비밀번호를 반환하지 않도록 주의
         );
+    }
+
+
+    @Transactional
+    public void updatePassword(Member detachedMember, UpdatePasswordRequestDto dto) {
+        Member member = memberRepository.findById(detachedMember.getId())
+                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
+
+        if (!dto.getNewPassword().equals(dto.getNewPasswordCheck())) {
+            throw new IllegalArgumentException("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+        }
+
+        if (passwordEncoder.matches(dto.getNewPassword(), member.getPassword())) {
+            throw new IllegalArgumentException("기존 비밀번호와 동일한 비밀번호를 사용할 수 없습니다.");
+        }
+
+        String encoded = passwordEncoder.encode(dto.getNewPassword());
+        member.updatePassword(encoded);  // 영속 상태에서 수행 → dirty checking OK
     }
 }
