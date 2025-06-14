@@ -35,10 +35,19 @@ public class AdminMemberController {
     public ResponseEntity<ApiResponseDto<DashboardResponseDto>> getDashboard(
             @Parameter(description = "페이지 번호", example = "1")
             @RequestParam(name = "pageNum",   defaultValue = "1")  int pageNum,
+
             @Parameter(description = "한 페이지당 회원 수", example = "10")
-            @RequestParam(name = "pageLimit", defaultValue = "10") int pageLimit
+            @RequestParam(name = "pageLimit", defaultValue = "10") int pageLimit,
+
+            @Parameter(description = "이메일 인증 여부 (true/false)", example = "true")
+            @RequestParam(name = "emailVerified", required = false) Boolean emailVerified,
+
+            @Parameter(description = "회원 상태 (active/deleted)", example = "active")
+            @RequestParam(name = "status", required = false) String status
     ) {
-        DashboardResponseDto responseDto = adminMemberService.getDashboard(pageNum, pageLimit);
+        DashboardResponseDto responseDto = adminMemberService.getDashboard(
+                pageNum, pageLimit, emailVerified, status);
+
         ApiResponseDto<DashboardResponseDto> response =
                 ApiResponseDto.of(200, "대시 보드 조회 성공", responseDto);
         return ResponseEntity.ok(response);

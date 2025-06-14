@@ -24,4 +24,9 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     Page<Member> findByUsernameContainingIgnoreCase(String username, Pageable pageable);
 
+    Page<Member> findByEmailVerifiedAndStatus(Boolean emailVerified, Member.Status statusEnum, Pageable pageable);
+
+    Page<Member> findByEmailVerified(Boolean emailVerified, Pageable pageable);
+
+    Page<Member> findByStatus(Member.Status statusEnum, Pageable pageable);
 }

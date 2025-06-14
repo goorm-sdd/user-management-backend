@@ -22,13 +22,33 @@ public class AdminMemberService {
 
     private final MemberRepository memberRepository;
 
-    public DashboardResponseDto getDashboard(int pageNum, int pageLimit) {
+    public DashboardResponseDto getDashboard(
+            int pageNum, int pageLimit, Boolean emailVerified, String status
+    ) {
         Pageable pageable = PageRequest.of(pageNum - 1, pageLimit, Sort.by("createdAt").descending());
 
-        Page<Member> page = memberRepository.findAll(pageable);
+        Member.Status statusEnum = null;
+        if (status != null) {
+            try {
+                statusEnum = Member.Status.valueOf(status.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("잘못된 status 값입니다. (active 또는 deleted)");
+            }
+        }
 
-        List<MemberResponseDto> users = memberRepository.findAll(pageable)
-                .stream()
+        Page<Member> page;
+
+        if (emailVerified != null && statusEnum != null) {
+            page = memberRepository.findByEmailVerifiedAndStatus(emailVerified, statusEnum, pageable);
+        } else if (emailVerified != null) {
+            page = memberRepository.findByEmailVerified(emailVerified, pageable);
+        } else if (statusEnum != null) {
+            page = memberRepository.findByStatus(statusEnum, pageable);
+        } else {
+            page = memberRepository.findAll(pageable);
+        }
+
+        List<MemberResponseDto> users = page.getContent().stream()
                 .map(member -> new MemberResponseDto(
                         member.getId(),
                         member.getUsername(),
