@@ -35,10 +35,19 @@ public class AdminMemberController {
     public ResponseEntity<ApiResponseDto<DashboardResponseDto>> getDashboard(
             @Parameter(description = "페이지 번호", example = "1")
             @RequestParam(name = "pageNum",   defaultValue = "1")  int pageNum,
+
             @Parameter(description = "한 페이지당 회원 수", example = "10")
-            @RequestParam(name = "pageLimit", defaultValue = "10") int pageLimit
+            @RequestParam(name = "pageLimit", defaultValue = "10") int pageLimit,
+
+            @Parameter(description = "이메일 인증 여부 (true/false)", example = "true")
+            @RequestParam(name = "emailVerified", required = false) Boolean emailVerified,
+
+            @Parameter(description = "회원 상태 (active/deleted)", example = "active")
+            @RequestParam(name = "status", required = false) String status
     ) {
-        DashboardResponseDto responseDto = adminMemberService.getDashboard(pageNum, pageLimit);
+        DashboardResponseDto responseDto = adminMemberService.getDashboard(
+                pageNum, pageLimit, emailVerified, status);
+
         ApiResponseDto<DashboardResponseDto> response =
                 ApiResponseDto.of(200, "대시 보드 조회 성공", responseDto);
         return ResponseEntity.ok(response);
@@ -166,7 +175,13 @@ public class AdminMemberController {
             @RequestParam(name = "sortBy", defaultValue = "createdAt") String sortBy,
 
             @Parameter(description = "정렬 방향 (asc 또는 desc)", example = "desc")
-            @RequestParam(name = "sortDir", defaultValue = "desc") String sortDir
+            @RequestParam(name = "sortDir", defaultValue = "desc") String sortDir,
+
+            @Parameter(description = "이메일 인증 여부 (true/false)", example = "true")
+            @RequestParam(name = "emailVerified", required = false) Boolean emailVerified,
+
+            @Parameter(description = "회원 상태 (active/deleted)", example = "active")
+            @RequestParam(name = "status", required = false) String status
     ) {
         // email과 username 동시 사용 제한
         if (email != null && username != null) {
@@ -175,7 +190,9 @@ public class AdminMemberController {
             );
         }
 
-        MemberListResponseDto dto = adminMemberService.searchMembers(email, username, pageNum, pageLimit, sortBy, sortDir);
+        MemberListResponseDto dto = adminMemberService.searchMembers(
+                email, username, pageNum, pageLimit, sortBy, sortDir, emailVerified, status
+        );
         return ResponseEntity.ok(
                 ApiResponseDto.of(200, "회원 검색 성공", dto)
         );
