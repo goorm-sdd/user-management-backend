@@ -39,6 +39,8 @@ springdoc:
     disable-swagger-default-url: true
     csrf:
       enabled: false
+  cache:
+    disabled: true
 
 server:
   port: 8080
