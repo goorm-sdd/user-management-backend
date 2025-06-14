@@ -69,7 +69,7 @@ public class PhoneVerificationService {
         PhoneVerification verification = repository.findById(phoneNumber)
                 .orElseThrow(() -> new IllegalArgumentException("인증 요청 기록이 없습니다."));
 
-        if (verification.getExpiresAt().isBefore(LocalDateTime.now())) {
+        if (verification.isExpired()) {
             throw new IllegalArgumentException("인증번호가 만료되었습니다.");
         }
 
@@ -77,7 +77,7 @@ public class PhoneVerificationService {
             throw new IllegalArgumentException("인증번호가 일치하지 않습니다.");
         }
 
-        verification.setVerified(true);
+        verification.verify();
         repository.save(verification);
     }
 }

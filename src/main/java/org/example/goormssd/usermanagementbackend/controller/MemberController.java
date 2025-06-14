@@ -114,4 +114,7 @@ public class MemberController {
         memberService.updatePassword(userDetails.getMember(), requestDto);
         return ResponseEntity.ok(ApiResponseDto.of(200, "User information updated successfully.",null));
     }
+
+
+
 }
