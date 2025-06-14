@@ -2,16 +2,22 @@ package org.example.goormssd.usermanagementbackend.controller;
 
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.goormssd.usermanagementbackend.dto.request.EmailCheckRequestDto;
 import org.example.goormssd.usermanagementbackend.dto.request.SignupRequestDto;
+import org.example.goormssd.usermanagementbackend.dto.request.UpdatePasswordRequestDto;
 import org.example.goormssd.usermanagementbackend.dto.response.ApiResponseDto;
 import org.example.goormssd.usermanagementbackend.dto.response.MyProfileResponseDto;
+import org.example.goormssd.usermanagementbackend.security.UserDetailsImpl;
 import org.example.goormssd.usermanagementbackend.service.MemberService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -89,5 +95,22 @@ public class MemberController {
         );
 
         return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/users/me/password")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @Operation(
+            summary = "비밀번호 변경",
+            description = "재인증 토큰(reauthToken)으로 인증된 사용자의 비밀번호를 변경합니다.",
+            security = @SecurityRequirement(name = "ReauthToken")
+    )
+    public ResponseEntity<ApiResponseDto<Void>> updatePassword(
+            @Valid @RequestBody UpdatePasswordRequestDto requestDto,
+            @Parameter(hidden = true) Authentication authentication
+    ) {
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+
+        memberService.updatePassword(userDetails.getMember(), requestDto);
+        return ResponseEntity.ok(ApiResponseDto.of(200, "User information updated successfully.",null));
     }
 }
