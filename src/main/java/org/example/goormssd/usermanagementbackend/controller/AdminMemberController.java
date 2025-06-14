@@ -2,9 +2,12 @@ package org.example.goormssd.usermanagementbackend.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.example.goormssd.usermanagementbackend.dto.request.UpdateStatusRequestDto;
 import org.example.goormssd.usermanagementbackend.dto.response.*;
 import org.example.goormssd.usermanagementbackend.service.AdminMemberService;
 import org.springframework.http.ResponseEntity;
@@ -196,5 +199,26 @@ public class AdminMemberController {
         return ResponseEntity.ok(
                 ApiResponseDto.of(200, "회원 검색 성공", dto)
         );
+    }
+
+    @PatchMapping("/status/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(
+            summary = "회원 상태 변경 (ADMIN)",
+            description = "관리자가 회원의 상태를 변경합니다. 'active' 또는 'deleted' 중 하나를 입력해야 합니다."
+    )
+    public ResponseEntity<ApiResponseDto<Void>> updateUserStatus(
+            @Parameter(description = "회원 ID", example = "1")
+            @PathVariable Long id,
+
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "변경할 회원 상태 ('active' 또는 'deleted')",
+                    required = true,
+                    content = @Content(schema = @Schema(implementation = UpdateStatusRequestDto.class))
+            )
+            @RequestBody UpdateStatusRequestDto requestDto) {
+
+        adminMemberService.updateStatus(id, requestDto.getStatus());
+        return ResponseEntity.ok(ApiResponseDto.of(200, "User status has been updated.", null));
     }
 }
