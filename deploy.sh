@@ -2,7 +2,7 @@
 
 APP_NAME=user-management-backend
 JAR_NAME=user-management-backend-0.0.1-SNAPSHOT.jar
-JAR_PATH=./$JAR_NAME
+JAR_PATH=./build/libs/$JAR_NAME
 LOG_PATH=app.log
 
 # 1. 실행 중인 프로세스 종료
