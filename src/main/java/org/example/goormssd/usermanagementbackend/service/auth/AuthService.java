@@ -9,8 +9,10 @@ import org.example.goormssd.usermanagementbackend.repository.MemberRepository;
 import org.example.goormssd.usermanagementbackend.repository.TokenRepository;
 import org.example.goormssd.usermanagementbackend.dto.auth.response.LoginResult;
 import org.example.goormssd.usermanagementbackend.security.JwtUtil;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.Random;
@@ -114,11 +116,11 @@ public class AuthService {
             throw new RuntimeException("비밀번호가 올바르지 않습니다.");
         }
 
-//        if (!member.isEmailVerified()) {
-//            throw new ResponseStatusException(
-//                    HttpStatus.FORBIDDEN, "이메일 인증을 완료해야 로그인할 수 있습니다."
-//            );
-//        }
+        if (!member.isEmailVerified()) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN, "이메일 인증을 완료해야 로그인할 수 있습니다."
+            );
+        }
 
         // AccessToken은 클라이언트가 저장 (서버 저장 불필요)
         // DB에는 RefreshToken만 저장 (보안 이슈 최소화)
