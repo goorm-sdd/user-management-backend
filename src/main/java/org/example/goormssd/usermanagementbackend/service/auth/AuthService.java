@@ -186,9 +186,9 @@ public class AuthService {
                 .isPresent();
     }
 
-    public void verifyPhoneCode(PhoneVerifyCodeRequestDto dto) {
-        phoneVerificationService.verifyCode(dto.getPhoneNumber(), dto.getCode());
-    }
+//    public void verifyPhoneCode(PhoneVerifyCodeRequestDto dto) {
+//        phoneVerificationService.verifyCode(dto.getPhoneNumber(), dto.getCode());
+//    }
 
     public String findEmailByUsernameAndPhone(FindEmailRequestDto dto) {
         phoneVerificationService.verifyCode(dto.getPhoneNumber(), dto.getCode());
