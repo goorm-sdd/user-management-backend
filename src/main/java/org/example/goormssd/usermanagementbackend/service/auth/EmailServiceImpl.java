@@ -34,4 +34,26 @@ public class EmailServiceImpl implements EmailService {
 
         mailSender.send(message);
     }
+
+
+    @Override
+    public void sendTemporaryPasswordEmail(String toEmail, String tempPassword) {
+        String subject = "임시 비밀번호 발급 안내";
+        String body = """
+                안녕하세요!
+
+                요청하신 임시 비밀번호는 아래와 같습니다:
+
+                %s
+
+                로그인 후 반드시 비밀번호를 변경해주세요.
+                """.formatted(tempPassword);
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(toEmail);
+        message.setSubject(subject);
+        message.setText(body);
+
+        mailSender.send(message);
+    }
 }

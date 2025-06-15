@@ -212,7 +212,7 @@ public class AuthService {
         member.setPassword(passwordEncoder.encode(tempPassword));
         memberRepository.save(member);
 
-        emailService.sendVerificationEmail(member.getEmail(), tempPassword);
+        emailService.sendTemporaryPasswordEmail(member.getEmail(), tempPassword);
     }
 
     private String generateTempPassword() {
