@@ -1,13 +1,13 @@
-package org.example.goormssd.usermanagementbackend.service;
+package org.example.goormssd.usermanagementbackend.service.member;
 
 import lombok.RequiredArgsConstructor;
 import org.example.goormssd.usermanagementbackend.domain.Member;
 import org.example.goormssd.usermanagementbackend.domain.PhoneVerification;
-import org.example.goormssd.usermanagementbackend.dto.request.SignupRequestDto;
 import org.example.goormssd.usermanagementbackend.dto.request.UpdatePasswordRequestDto;
 import org.example.goormssd.usermanagementbackend.dto.response.MyProfileResponseDto;
 import org.example.goormssd.usermanagementbackend.repository.MemberRepository;
 import org.example.goormssd.usermanagementbackend.repository.PhoneVerificationRepository;
+import org.example.goormssd.usermanagementbackend.service.auth.EmailService;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;

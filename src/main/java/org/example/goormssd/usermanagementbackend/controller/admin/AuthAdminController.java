@@ -1,4 +1,4 @@
-package org.example.goormssd.usermanagementbackend.controller.auth;
+package org.example.goormssd.usermanagementbackend.controller.admin;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.goormssd.usermanagementbackend.dto.request.LoginRequestDto;
 import org.example.goormssd.usermanagementbackend.dto.response.ApiResponseDto;
 import org.example.goormssd.usermanagementbackend.dto.response.LoginResponseDto;
-import org.example.goormssd.usermanagementbackend.service.AuthAdminService;
+import org.example.goormssd.usermanagementbackend.service.admin.AuthAdminService;
 import org.example.goormssd.usermanagementbackend.dto.response.LoginResult;
 import org.example.goormssd.usermanagementbackend.security.JwtUtil;
 import org.springframework.http.HttpHeaders;

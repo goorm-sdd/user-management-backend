@@ -12,7 +12,7 @@ import org.example.goormssd.usermanagementbackend.dto.response.ApiResponseDto;
 import org.example.goormssd.usermanagementbackend.dto.response.DashboardResponseDto;
 import org.example.goormssd.usermanagementbackend.dto.response.MemberDetailResponseDto;
 import org.example.goormssd.usermanagementbackend.dto.response.MemberListResponseDto;
-import org.example.goormssd.usermanagementbackend.service.AdminMemberService;
+import org.example.goormssd.usermanagementbackend.service.admin.AdminMemberService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;

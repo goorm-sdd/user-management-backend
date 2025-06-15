@@ -1,4 +1,4 @@
-package org.example.goormssd.usermanagementbackend.service;
+package org.example.goormssd.usermanagementbackend.service.auth;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;

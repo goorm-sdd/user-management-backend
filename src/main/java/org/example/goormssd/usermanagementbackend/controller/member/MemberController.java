@@ -1,4 +1,4 @@
-package org.example.goormssd.usermanagementbackend.controller;
+package org.example.goormssd.usermanagementbackend.controller.member;
 
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,14 +11,11 @@ import org.example.goormssd.usermanagementbackend.dto.request.*;
 import org.example.goormssd.usermanagementbackend.dto.response.ApiResponseDto;
 import org.example.goormssd.usermanagementbackend.dto.response.MyProfileResponseDto;
 import org.example.goormssd.usermanagementbackend.security.UserDetailsImpl;
-import org.example.goormssd.usermanagementbackend.service.MemberService;
+import org.example.goormssd.usermanagementbackend.service.member.MemberService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @CrossOrigin(
         origins = "http://localhost:5173",

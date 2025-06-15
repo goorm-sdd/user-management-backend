@@ -1,4 +1,4 @@
-package org.example.goormssd.usermanagementbackend.controller;
+package org.example.goormssd.usermanagementbackend.controller.auth;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -15,7 +15,7 @@ import org.example.goormssd.usermanagementbackend.dto.response.ApiResponseDto;
 import org.example.goormssd.usermanagementbackend.dto.response.FindEmailResponseDto;
 import org.example.goormssd.usermanagementbackend.dto.response.LoginResponseDto;
 import org.example.goormssd.usermanagementbackend.dto.response.RefreshTokenDto;
-import org.example.goormssd.usermanagementbackend.service.AuthService;
+import org.example.goormssd.usermanagementbackend.service.auth.AuthService;
 import org.example.goormssd.usermanagementbackend.dto.response.LoginResult;
 import org.example.goormssd.usermanagementbackend.security.JwtUtil;
 import org.springframework.http.HttpHeaders;

@@ -1,4 +1,4 @@
-package org.example.goormssd.usermanagementbackend.controller;
+package org.example.goormssd.usermanagementbackend.controller.member;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -8,7 +8,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.goormssd.usermanagementbackend.dto.request.PasswordVerifyRequestDto;
 import org.example.goormssd.usermanagementbackend.dto.response.ReauthResponseDto;
-import org.example.goormssd.usermanagementbackend.service.PasswordService;
+import org.example.goormssd.usermanagementbackend.service.member.PasswordService;
 import org.example.goormssd.usermanagementbackend.security.JwtUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;

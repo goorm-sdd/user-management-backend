@@ -1,4 +1,4 @@
-package org.example.goormssd.usermanagementbackend.service;
+package org.example.goormssd.usermanagementbackend.service.admin;
 
 import lombok.RequiredArgsConstructor;
 import org.example.goormssd.usermanagementbackend.domain.Member;
