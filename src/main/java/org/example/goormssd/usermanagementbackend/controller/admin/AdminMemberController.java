@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.goormssd.usermanagementbackend.domain.Member;
 import org.example.goormssd.usermanagementbackend.dto.admin.request.UpdateStatusRequestDto;
@@ -156,7 +157,7 @@ public class AdminMemberController {
                     required = true,
                     content = @Content(schema = @Schema(implementation = UpdateStatusRequestDto.class))
             )
-            @RequestBody UpdateStatusRequestDto requestDto) {
+            @Valid @RequestBody UpdateStatusRequestDto requestDto) {
 
         adminMemberService.updateStatus(id, requestDto.getStatus());
         return ResponseEntity.ok(ApiResponseDto.of(200, "User status has been updated.", null));
