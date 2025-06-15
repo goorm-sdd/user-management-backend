@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.goormssd.usermanagementbackend.dto.auth.requset.PhoneVerifyCodeRequestDto;
 import org.example.goormssd.usermanagementbackend.dto.auth.requset.PhoneVerifyRequestDto;
+import org.example.goormssd.usermanagementbackend.dto.common.ApiResponseDto;
 import org.example.goormssd.usermanagementbackend.service.auth.PhoneVerificationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,13 +28,13 @@ public class PhoneVerificationController {
     )
     @Tag(name = "인증 API", description = "회원가입, 로그인, 인증 관련 API입니다.")
     @PostMapping("/send")
-    public ResponseEntity<?> sendCode(
+    public ResponseEntity<ApiResponseDto<Void>> sendCode(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "전화번호 입력 DTO", required = true)
             @Valid @RequestBody PhoneVerifyRequestDto requestDto
     ) {
         phoneService.sendVerificationCode(requestDto.getPhoneNumber());
-        return ResponseEntity.ok("인증번호가 발송되었습니다.");
+        return ResponseEntity.ok(ApiResponseDto.of(200, "인증번호가 발송되었습니다.", null));
     }
 
     @Operation(
@@ -42,13 +43,13 @@ public class PhoneVerificationController {
     )
     @Tag(name = "인증 API", description = "회원가입, 로그인, 인증 관련 API입니다.")
     @PostMapping("/verify")
-    public ResponseEntity<?> verifyCode(
+    public ResponseEntity<ApiResponseDto<Void>> verifyCode(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "휴대폰 번호 + 인증번호 입력 DTO", required = true)
             @Valid @RequestBody PhoneVerifyCodeRequestDto requestDto
     ) {
         phoneService.verifyCode(requestDto.getPhoneNumber(), requestDto.getCode());
-        return ResponseEntity.ok("인증이 완료되었습니다.");
+        return ResponseEntity.ok(ApiResponseDto.of(200, "인증이 완료되었습니다.", null));
     }
 
 }
