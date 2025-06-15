@@ -1,5 +1,6 @@
 package org.example.goormssd.usermanagementbackend.dto.member.request;
 
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -11,16 +12,21 @@ import org.example.goormssd.usermanagementbackend.validation.NoTripleRepeat;
 @Setter
 public class UpdatePasswordRequestDto {
 
-    @NotBlank(message = "비밀번호는 필수 입력입니다.")
-    @Size(min = 8, message = "비밀번호는 최소 8자 이상이어야 합니다.")
+
+    @NotBlank(message = "새 비밀번호는 필수 입력입니다.")
+    @Size(min = 8, message = "새 비밀번호는 최소 8자 이상이어야 합니다.")
     @Pattern(
             regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$",
-            message = "비밀번호는 대소문자, 숫자, 특수문자를 포함해야 합니다."
+            message = "새 비밀번호는 대소문자, 숫자, 특수문자를 포함해야 합니다."
     )
     @NoTripleRepeat
     private String newPassword;
 
-    @NotBlank(message = "비밀번호 확인은 필수 입력입니다.")
+    @NotBlank(message = "새 비밀번호 확인은 필수 입력입니다.")
     private String newPasswordCheck;
 
+    @AssertTrue(message = "새 비밀번호와 비밀번호 확인이 일치하지 않습니다.")
+    public boolean isPasswordMatching() {
+        return newPassword != null && newPassword.equals(newPasswordCheck);
+    }
 }
