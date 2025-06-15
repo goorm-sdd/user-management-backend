@@ -6,10 +6,11 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.goormssd.usermanagementbackend.dto.member.request.PasswordVerifyRequestDto;
 import org.example.goormssd.usermanagementbackend.dto.auth.response.ReauthResponseDto;
-import org.example.goormssd.usermanagementbackend.service.member.PasswordService;
+import org.example.goormssd.usermanagementbackend.dto.common.ApiResponseDto;
+import org.example.goormssd.usermanagementbackend.dto.member.request.PasswordVerifyRequestDto;
 import org.example.goormssd.usermanagementbackend.security.JwtUtil;
+import org.example.goormssd.usermanagementbackend.service.member.PasswordService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -33,7 +34,7 @@ public class PasswordController {
     )
     @Tag(name = "회원 API", description = "일반 회원 기능 관련 API입니다.")
     @PostMapping("/verify")
-    public ResponseEntity<ReauthResponseDto> verifyPassword(
+    public ResponseEntity<ApiResponseDto<ReauthResponseDto>> verifyPassword(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "비밀번호 입력 DTO", required = true)
             @Valid @RequestBody PasswordVerifyRequestDto requestDto,
@@ -42,11 +43,18 @@ public class PasswordController {
         boolean ok = passwordService.verify(auth, requestDto.getPassword());
         if (!ok) {
             return ResponseEntity.status(401)
-                    .body(new ReauthResponseDto(false, null, "비밀번호 불일치"));
+                    .body(ApiResponseDto.of(401, "비밀번호가 일치하지 않습니다.", null));
         }
-        String token = jwtUtil.generateReauthToken(
-                (UserDetails) auth.getPrincipal());
+
+        String token = jwtUtil.generateReauthToken((UserDetails) auth.getPrincipal());
+
+        ReauthResponseDto responseDto = new ReauthResponseDto(
+                true,
+                token
+        );
+
         return ResponseEntity.ok(
-                new ReauthResponseDto(true, token, "재인증 토큰 발급"));
+                ApiResponseDto.of(200, "재인증 토큰이 발급되었습니다.", responseDto)
+        );
     }
 }

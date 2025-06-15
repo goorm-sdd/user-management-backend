@@ -13,5 +13,7 @@ public class PhoneVerifyCodeRequestDto {
     @Pattern(regexp = "^010\\d{8}$", message = "올바른 형식의 전화번호여야 합니다.")
     private String phoneNumber;
 
+    @NotBlank(message = "인증번호는 필수 입력입니다.")
+    @Pattern(regexp = "^\\d{6}$", message = "인증번호는 숫자 6자리여야 합니다.")
     private String code;
 }

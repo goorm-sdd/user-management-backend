@@ -11,13 +11,13 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.goormssd.usermanagementbackend.dto.auth.requset.*;
+import org.example.goormssd.usermanagementbackend.dto.auth.response.FindEmailResponseDto;
 import org.example.goormssd.usermanagementbackend.dto.auth.response.LoginResponseDto;
 import org.example.goormssd.usermanagementbackend.dto.auth.response.LoginResult;
 import org.example.goormssd.usermanagementbackend.dto.auth.response.RefreshTokenDto;
 import org.example.goormssd.usermanagementbackend.dto.common.ApiResponseDto;
-import org.example.goormssd.usermanagementbackend.dto.auth.response.FindEmailResponseDto;
-import org.example.goormssd.usermanagementbackend.service.auth.AuthService;
 import org.example.goormssd.usermanagementbackend.security.JwtUtil;
+import org.example.goormssd.usermanagementbackend.service.auth.AuthService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -26,8 +26,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 @CrossOrigin(
@@ -58,7 +56,7 @@ public class AuthController {
     )
     @Tag(name = "인증 API", description = "회원가입, 로그인, 인증 관련 API입니다.")
     @PostMapping("/auth/signup")
-    public ResponseEntity<String> signup(
+    public ResponseEntity<ApiResponseDto<Void>> signup(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "회원가입 요청 데이터", required = true
             )
@@ -66,7 +64,7 @@ public class AuthController {
     ) {
         // 회원 저장 및 이메일 인증 처리까지 서비스에서 수행
         authService.signup(requestDto);
-        return ResponseEntity.ok("회원가입이 완료되었습니다. 이메일을 확인해주세요.");
+        return ResponseEntity.ok(ApiResponseDto.of(200, "회원가입이 완료되었습니다. 이메일을 확인해주세요.", null));
     }
 
     @Operation(
@@ -75,23 +73,18 @@ public class AuthController {
     )
     @Tag(name = "인증 API", description = "회원가입, 로그인, 인증 관련 API입니다.")
     @PostMapping("/auth/email")
-    public ResponseEntity<Map<String, Object>> checkEmailDuplicate(
+    public ResponseEntity<ApiResponseDto<Void>> checkEmailDuplicate(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "이메일 중복 확인 요청", required = true
             )
             @RequestBody @Valid EmailCheckRequestDto requestDto
     ) {
         boolean exists = authService.isEmailDuplicate(requestDto.getEmail());
-
-        Map<String, Object> response = new HashMap<>();
         if (exists) {
-            response.put("status", 409);
-            response.put("message", "중복된 이메일입니다.");
-            return ResponseEntity.status(409).body(response);
+            return ResponseEntity.status(409)
+                    .body(ApiResponseDto.error(409, "중복된 이메일입니다."));
         } else {
-            response.put("status", 200);
-            response.put("message", "사용가능한 이메일입니다.");
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(ApiResponseDto.of(200, "사용가능한 이메일입니다.", null));
         }
     }
 
@@ -104,7 +97,7 @@ public class AuthController {
     public ResponseEntity<ApiResponseDto<LoginResponseDto>> login(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "로그인 요청 정보 (이메일, 비밀번호)", required = true)
-            @RequestBody LoginRequestDto loginRequest,
+            @Valid @RequestBody LoginRequestDto loginRequest,
             @Parameter(hidden = true) HttpServletResponse response) {
 
         // var 사용을 통해 타입 추론을 활용할 수 있지만, 명시적인 타입 선언이 가독성에 더 좋을 수 있음
@@ -129,9 +122,7 @@ public class AuthController {
 
         LoginResponseDto responseBody = new LoginResponseDto(result.getAccessToken(), result.getUser());
 
-        return ResponseEntity.ok(
-                new ApiResponseDto<>(200, "Login successful", responseBody)
-        );
+        return ResponseEntity.ok(ApiResponseDto.of(200, "로그인에 성공하였습니다.", responseBody));
     }
 
     @Operation(
@@ -160,15 +151,14 @@ public class AuthController {
         // AccessToken 검증
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .body(new ApiResponseDto<>(401, "AccessToken이 필요합니다.", null));
+            return ResponseEntity.status(401)
+                    .body(ApiResponseDto.error(401, "AccessToken이 필요합니다."));
         }
+
         String accessToken = authHeader.substring(7);
         if (!jwtUtil.validateAccessToken(accessToken)) {
-            return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .body(new ApiResponseDto<>(401, "AccessToken이 유효하지 않습니다.", null));
+            return ResponseEntity.status(401)
+                    .body(ApiResponseDto.error(401, "유효하지 않은 AccessToken입니다."));
         }
 
         // 디버깅용: 모든 쿠키 로깅
@@ -211,7 +201,7 @@ public class AuthController {
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, expiredCookie.toString());
 
-        return ResponseEntity.ok(new ApiResponseDto<>(200, "Logout successful.", null));
+        return ResponseEntity.ok(ApiResponseDto.of(200, "로그아웃이 완료되었습니다.", null));
     }
 
     @Operation(
@@ -260,7 +250,7 @@ public class AuthController {
     public ResponseEntity<ApiResponseDto<FindEmailResponseDto>> findEmail(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "이름과 전화번호", required = true)
-            @RequestBody FindEmailRequestDto request) {
+            @Valid @RequestBody FindEmailRequestDto request) {
         String email = authService.findEmailByUsernameAndPhone(request);
         return ResponseEntity.ok(new ApiResponseDto<>(200, "Email (ID) retrieved successfully.", new FindEmailResponseDto(email)));
     }
@@ -274,7 +264,7 @@ public class AuthController {
     public ResponseEntity<ApiResponseDto<Void>> resetPassword(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "이름, 이메일, 전화번호", required = true)
-            @RequestBody FindPasswordRequestDto request) {
+            @Valid @RequestBody FindPasswordRequestDto request) {
         authService.resetPasswordAndSendEmail(request);
         return ResponseEntity.ok(new ApiResponseDto<>(200, "Temporary password has been sent via email.", null));
     }
