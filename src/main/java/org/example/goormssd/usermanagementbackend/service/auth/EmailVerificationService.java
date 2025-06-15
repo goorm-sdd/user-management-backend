@@ -3,6 +3,8 @@ package org.example.goormssd.usermanagementbackend.service.auth;
 import lombok.RequiredArgsConstructor;
 import org.example.goormssd.usermanagementbackend.domain.EmailVerification;
 import org.example.goormssd.usermanagementbackend.domain.Member;
+import org.example.goormssd.usermanagementbackend.exception.ErrorCode;
+import org.example.goormssd.usermanagementbackend.exception.GlobalException;
 import org.example.goormssd.usermanagementbackend.repository.EmailVerificationRepository;
 import org.example.goormssd.usermanagementbackend.repository.MemberRepository;
 import org.springframework.stereotype.Service;
@@ -36,17 +38,17 @@ public class EmailVerificationService {
     // 이메일 인증 링크 클릭 시 인증 코드를 검증하는 메서드
     public void verifyEmailCode(String code) {
         EmailVerification verification = emailVerificationRepository.findByCode(code)
-                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 인증 코드입니다."));
+                .orElseThrow(() -> new GlobalException(ErrorCode.VERIFICATION_CODE_INVALID));
 
         if (verification.getExpiresAt().isBefore(LocalDateTime.now())) {
-            throw new IllegalStateException("인증 링크가 만료되었습니다.");
+            throw new GlobalException(ErrorCode.VERIFICATION_CODE_EXPIRED);
         }
 
         Member member = memberRepository.findByEmail(verification.getEmail())
-                .orElseThrow(() -> new IllegalStateException("해당 이메일로 등록된 사용자가 없습니다."));
+                .orElseThrow(() -> new GlobalException(ErrorCode.EMAIL_NOT_FOUND));
 
         if (member.isEmailVerified()) {
-            throw new IllegalStateException("이미 인증이 완료된 계정입니다.");
+            throw new GlobalException(ErrorCode.EMAIL_ALREADY_VERIFIED);
         }
 
         member.setEmailVerified(true);
