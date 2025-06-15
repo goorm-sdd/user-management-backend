@@ -39,6 +39,7 @@ public class Member {
     @Column(nullable = false)
     private Status status;
 
+    @Builder.Default
     @Column(nullable = false)
     private boolean emailVerified = false;
 
