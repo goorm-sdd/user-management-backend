@@ -216,13 +216,41 @@ public class AuthService {
     }
 
     private String generateTempPassword() {
-        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        StringBuilder sb = new StringBuilder();
+        String upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String lower = "abcdefghijklmnopqrstuvwxyz";
+        String digits = "0123456789";
+        String symbols = "!@#$%^&*()_+-=[]{}|;:,.<>?";
+
+        String allChars = upper + lower + digits + symbols;
         Random rnd = new Random();
-        for (int i = 0; i < 10; i++) {
-            sb.append(chars.charAt(rnd.nextInt(chars.length())));
+        StringBuilder sb = new StringBuilder();
+
+        // 각 그룹에서 하나씩 무조건 포함되도록
+        sb.append(upper.charAt(rnd.nextInt(upper.length())));
+        sb.append(lower.charAt(rnd.nextInt(lower.length())));
+        sb.append(digits.charAt(rnd.nextInt(digits.length())));
+        sb.append(symbols.charAt(rnd.nextInt(symbols.length())));
+
+        // 나머지 자리 채우기 (중복 3연속 방지)
+        while (sb.length() < 10) {
+            char nextChar = allChars.charAt(rnd.nextInt(allChars.length()));
+            int len = sb.length();
+            if (len >= 2 && sb.charAt(len - 1) == nextChar && sb.charAt(len - 2) == nextChar) {
+                continue; // 3연속 문자 방지
+            }
+            sb.append(nextChar);
         }
-        return sb.toString();
+
+        // 무작위 섞기 (앞쪽에 대문자/소문자 등 치우침 방지)
+        char[] passwordChars = sb.toString().toCharArray();
+        for (int i = passwordChars.length - 1; i > 0; i--) {
+            int j = rnd.nextInt(i + 1);
+            char temp = passwordChars[i];
+            passwordChars[i] = passwordChars[j];
+            passwordChars[j] = temp;
+        }
+
+        return new String(passwordChars);
     }
 
 }
