@@ -122,5 +122,7 @@ public class MemberService {
 
         persistedMember.updatePhoneNumber(newPhoneNumber);
         persistedMember.setModifiedAt(LocalDateTime.now()); // 트리거 역할
+
+        phoneVerificationRepository.delete(verification);
     }
 }
