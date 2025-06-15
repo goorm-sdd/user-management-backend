@@ -7,11 +7,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.goormssd.usermanagementbackend.dto.request.FindEmailRequestDto;
-import org.example.goormssd.usermanagementbackend.dto.request.FindPasswordRequestDto;
-import org.example.goormssd.usermanagementbackend.dto.request.LoginRequestDto;
+import org.example.goormssd.usermanagementbackend.dto.request.*;
 import org.example.goormssd.usermanagementbackend.dto.response.ApiResponseDto;
 import org.example.goormssd.usermanagementbackend.dto.response.FindEmailResponseDto;
 import org.example.goormssd.usermanagementbackend.dto.response.LoginResponseDto;
@@ -27,6 +26,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @CrossOrigin(
@@ -48,6 +49,50 @@ public class AuthController {
     //    public AuthController(AuthService authService) {
     //        this.authService = authService;
     //    }
+
+
+    @Operation(
+            summary = "회원가입",
+            description = "이메일, 비밀번호, 사용자 이름 등의 정보를 입력받아 회원가입을 처리합니다. 이메일 인증도 함께 처리됩니다."
+    )
+    @Tag(name = "인증 API", description = "회원가입, 로그인, 인증 관련 API입니다.")
+    @PostMapping("/auth/signup")
+    public ResponseEntity<String> signup(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "회원가입 요청 데이터", required = true
+            )
+            @Valid @RequestBody SignupRequestDto requestDto
+    ) {
+        // 회원 저장 및 이메일 인증 처리까지 서비스에서 수행
+        authService.signup(requestDto);
+        return ResponseEntity.ok("회원가입이 완료되었습니다. 이메일을 확인해주세요.");
+    }
+
+    @Operation(
+            summary = "이메일 중복 확인",
+            description = "입력한 이메일이 이미 가입된 이메일인지 확인합니다."
+    )
+    @Tag(name = "인증 API", description = "회원가입, 로그인, 인증 관련 API입니다.")
+    @PostMapping("/auth/email")
+    public ResponseEntity<Map<String, Object>> checkEmailDuplicate(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "이메일 중복 확인 요청", required = true
+            )
+            @RequestBody @Valid EmailCheckRequestDto requestDto
+    ) {
+        boolean exists = authService.isEmailDuplicate(requestDto.getEmail());
+
+        Map<String, Object> response = new HashMap<>();
+        if (exists) {
+            response.put("status", 409);
+            response.put("message", "중복된 이메일입니다.");
+            return ResponseEntity.status(409).body(response);
+        } else {
+            response.put("status", 200);
+            response.put("message", "사용가능한 이메일입니다.");
+            return ResponseEntity.ok(response);
+        }
+    }
 
     @Operation(
             summary = "사용자 로그인",

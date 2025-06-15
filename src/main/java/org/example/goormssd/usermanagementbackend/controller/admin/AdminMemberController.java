@@ -1,4 +1,4 @@
-package org.example.goormssd.usermanagementbackend.controller;
+package org.example.goormssd.usermanagementbackend.controller.admin;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

@@ -3,10 +3,7 @@ package org.example.goormssd.usermanagementbackend.service;
 import lombok.RequiredArgsConstructor;
 import org.example.goormssd.usermanagementbackend.domain.Member;
 import org.example.goormssd.usermanagementbackend.domain.Token;
-import org.example.goormssd.usermanagementbackend.dto.request.FindEmailRequestDto;
-import org.example.goormssd.usermanagementbackend.dto.request.FindPasswordRequestDto;
-import org.example.goormssd.usermanagementbackend.dto.request.LoginRequestDto;
-import org.example.goormssd.usermanagementbackend.dto.request.PhoneVerifyCodeRequestDto;
+import org.example.goormssd.usermanagementbackend.dto.request.*;
 import org.example.goormssd.usermanagementbackend.dto.response.LoginUserDto;
 import org.example.goormssd.usermanagementbackend.repository.MemberRepository;
 import org.example.goormssd.usermanagementbackend.repository.TokenRepository;
@@ -29,6 +26,7 @@ public class AuthService {
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
     private final PhoneVerificationService phoneVerificationService;
+    private final EmailVerificationService emailVerificationService;
     private final EmailService emailService;
 
     // AuthController에서와 동일한 이유로 생성자 주입 방식 사용
@@ -70,6 +68,42 @@ public class AuthService {
 //            return user;
 //        }
 //    }
+
+    public void signup(SignupRequestDto requestDto) {
+        if (!requestDto.getPassword().equals(requestDto.getPasswordCheck())) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+
+        if (memberRepository.existsByEmail(requestDto.getEmail())) {
+            throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
+        }
+
+        // 비밀번호 암호화
+        String encodedPassword = passwordEncoder.encode(requestDto.getPassword());
+
+        // 회원 생성
+        Member member = Member.builder()
+                .username(requestDto.getUsername())
+                .email(requestDto.getEmail())
+                .password(encodedPassword)
+                .phoneNumber(requestDto.getPhoneNumber())
+                .emailVerified(false)
+                .role(Member.Role.USER)
+                .status(Member.Status.ACTIVE)
+                .build();
+
+        // 저장
+        memberRepository.save(member);
+
+        // 인증 코드 생성 및 메일 전송
+        String code = emailVerificationService.createVerificationEntry(member);
+        emailService.sendVerificationEmail(member.getEmail(), code);
+
+    }
+
+    public boolean isEmailDuplicate(String email) {
+        return memberRepository.existsByEmail(email);
+    }
 
     public LoginResult loginWithUserInfo(LoginRequestDto loginRequest) {
         // Token 필드명 member 반영
