@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.goormssd.usermanagementbackend.dto.request.EmailCheckRequestDto;
 import org.example.goormssd.usermanagementbackend.dto.request.SignupRequestDto;
 import org.example.goormssd.usermanagementbackend.dto.request.UpdatePasswordRequestDto;
+import org.example.goormssd.usermanagementbackend.dto.request.UpdatePhoneRequestDto;
 import org.example.goormssd.usermanagementbackend.dto.response.ApiResponseDto;
 import org.example.goormssd.usermanagementbackend.dto.response.MyProfileResponseDto;
 import org.example.goormssd.usermanagementbackend.security.UserDetailsImpl;
@@ -116,5 +117,21 @@ public class MemberController {
     }
 
 
+    @PatchMapping("/users/me/phone")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @Operation(
+            summary = "전화번호 변경",
+            description = "인증된 전화번호로 사용자의 정보를 변경합니다.",
+            security = @SecurityRequirement(name = "ReauthToken")
+    )
+    @Tag(name = "회원 API", description = "일반 회원 기능 관련 API입니다.")
+    public ResponseEntity<ApiResponseDto<Void>> updatePhoneNumber(
+            @Valid @RequestBody UpdatePhoneRequestDto requestDto,
+            @Parameter(hidden = true) Authentication authentication
+    ) {
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        memberService.updatePhoneNumber(userDetails.getMember(), requestDto.getPhoneNumber());
+        return ResponseEntity.ok(ApiResponseDto.of(200, "User information updated successfully.", null));
+    }
 
 }
