@@ -11,13 +11,13 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.goormssd.usermanagementbackend.dto.auth.requset.*;
+import org.example.goormssd.usermanagementbackend.dto.auth.response.FindEmailResponseDto;
 import org.example.goormssd.usermanagementbackend.dto.auth.response.LoginResponseDto;
 import org.example.goormssd.usermanagementbackend.dto.auth.response.LoginResult;
 import org.example.goormssd.usermanagementbackend.dto.auth.response.RefreshTokenDto;
 import org.example.goormssd.usermanagementbackend.dto.common.ApiResponseDto;
-import org.example.goormssd.usermanagementbackend.dto.auth.response.FindEmailResponseDto;
-import org.example.goormssd.usermanagementbackend.service.auth.AuthService;
 import org.example.goormssd.usermanagementbackend.security.JwtUtil;
+import org.example.goormssd.usermanagementbackend.service.auth.AuthService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -26,8 +26,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 @CrossOrigin(
