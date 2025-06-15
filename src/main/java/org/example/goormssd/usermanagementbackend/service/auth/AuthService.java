@@ -192,6 +192,7 @@ public class AuthService {
 
     public String findEmailByUsernameAndPhone(FindEmailRequestDto dto) {
         phoneVerificationService.verifyCode(dto.getPhoneNumber(), dto.getCode());
+        phoneVerificationService.deleteCode(dto.getPhoneNumber());
         return memberRepository.findAll().stream()
                 .filter(m -> m.getUsername().equals(dto.getUsername())
                         && m.getPhoneNumber().equals(dto.getPhoneNumber()))
@@ -209,6 +210,7 @@ public class AuthService {
         }
 
         phoneVerificationService.verifyCode(member.getPhoneNumber(), dto.getCode());
+        phoneVerificationService.deleteCode(member.getPhoneNumber()); // 인증 성공 후 삭제
 
         String tempPassword = generateTempPassword();
         member.setPassword(passwordEncoder.encode(tempPassword));
