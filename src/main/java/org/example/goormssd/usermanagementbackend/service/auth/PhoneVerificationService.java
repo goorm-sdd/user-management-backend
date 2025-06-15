@@ -80,4 +80,8 @@ public class PhoneVerificationService {
         verification.verify();
         repository.save(verification);
     }
+
+    public void deleteCode(String phoneNumber) {
+        repository.deleteByPhoneNumber(phoneNumber);
+    }
 }
