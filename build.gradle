@@ -55,6 +55,15 @@ dependencies {
     // coolsms (Coolsms API)
     implementation 'net.nurigo:sdk:4.3.2'
 
+    // Querydsl
+    implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+    annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jakarta'
+
+    // Jakarta JPA API
+    implementation 'jakarta.persistence:jakarta.persistence-api:3.1.0'
+    annotationProcessor 'jakarta.persistence:jakarta.persistence-api:3.1.0'
+
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
     // 테스트 관련 라이브러리
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
