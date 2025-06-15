@@ -208,6 +208,8 @@ public class AuthService {
             throw new RuntimeException("사용자 이름이 일치하지 않습니다.");
         }
 
+        phoneVerificationService.verifyCode(member.getPhoneNumber(), dto.getCode());
+
         String tempPassword = generateTempPassword();
         member.setPassword(passwordEncoder.encode(tempPassword));
         memberRepository.save(member);
