@@ -7,10 +7,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.goormssd.usermanagementbackend.dto.request.EmailCheckRequestDto;
-import org.example.goormssd.usermanagementbackend.dto.request.SignupRequestDto;
-import org.example.goormssd.usermanagementbackend.dto.request.UpdatePasswordRequestDto;
-import org.example.goormssd.usermanagementbackend.dto.request.UpdatePhoneRequestDto;
+import org.example.goormssd.usermanagementbackend.dto.request.*;
 import org.example.goormssd.usermanagementbackend.dto.response.ApiResponseDto;
 import org.example.goormssd.usermanagementbackend.dto.response.MyProfileResponseDto;
 import org.example.goormssd.usermanagementbackend.security.UserDetailsImpl;
@@ -134,4 +131,20 @@ public class MemberController {
         return ResponseEntity.ok(ApiResponseDto.of(200, "User information updated successfully.", null));
     }
 
+    @PatchMapping("/users/me/status")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @Operation(
+            summary = "회원 상태 변경 (탈퇴 또는 복구)",
+            description = "reauthToken으로 인증된 사용자의 상태를 변경합니다.",
+            security = @SecurityRequirement(name = "ReauthToken")
+    )
+    @Tag(name = "회원 API", description = "일반 회원 기능 관련 API입니다.")
+    public ResponseEntity<ApiResponseDto<Void>> updateMyStatus(
+            @Valid @RequestBody UpdateStatusRequestDto requestDto,
+            @Parameter(hidden = true) Authentication authentication
+    ) {
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        memberService.updateStatus(userDetails.getMember(), requestDto.getStatus());
+        return ResponseEntity.ok(ApiResponseDto.of(200, "회원 상태가 변경되었습니다.", null));
+    }
 }

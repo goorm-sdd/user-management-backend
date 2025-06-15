@@ -56,7 +56,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             boolean isSensitivePath = "PATCH".equals(method) && (
                     path.equals("/api/users/me/password") ||
                             path.equals("/api/users/me/phone") ||
-                            path.equals("/api/users/me") ||
+                            path.equals("/api/users/me/status") ||
                             path.startsWith("/api/admin/users/status")
             );
 

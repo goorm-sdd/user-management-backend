@@ -125,4 +125,29 @@ public class MemberService {
 
         phoneVerificationRepository.delete(verification);
     }
+
+    @Transactional
+    public void updateStatus(Member member, String status) {
+        Member.Status targetStatus;
+        try {
+            targetStatus = Member.Status.valueOf(status.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("상태 값은 'active' 또는 'deleted'만 가능합니다.");
+        }
+
+        if (member.getStatus() == targetStatus) {
+            throw new IllegalArgumentException("이미 해당 상태입니다.");
+        }
+
+        if (member.getStatus() == Member.Status.DELETED && targetStatus == Member.Status.ACTIVE) {
+            throw new IllegalArgumentException("탈퇴한 사용자는 복구할 수 없습니다.");
+        }
+
+        Member persisted = memberRepository.findById(member.getId())
+                .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
+
+        persisted.setStatus(targetStatus);
+        persisted.setModifiedAt(LocalDateTime.now());
+
+    }
 }
