@@ -10,6 +10,7 @@ import org.example.goormssd.usermanagementbackend.domain.PhoneVerification;
 import org.example.goormssd.usermanagementbackend.repository.PhoneVerificationRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Random;
@@ -81,6 +82,7 @@ public class PhoneVerificationService {
         repository.save(verification);
     }
 
+    @Transactional
     public void deleteCode(String phoneNumber) {
         repository.deleteByPhoneNumber(phoneNumber);
     }
