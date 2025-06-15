@@ -80,6 +80,10 @@ public class AuthService {
             throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
         }
 
+        phoneVerificationService.verifyCode(requestDto.getPhoneNumber(), requestDto.getCode());
+        phoneVerificationService.deleteCode(requestDto.getPhoneNumber());
+
+
         // 비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(requestDto.getPassword());
 

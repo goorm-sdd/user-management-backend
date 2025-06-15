@@ -35,5 +35,6 @@ public class SignupRequestDto {
     @Pattern(regexp = "^010\\d{8}$", message = "올바른 형식의 전화번호여야 합니다.")
     private String phoneNumber;
 
+    private String code;
 
 }

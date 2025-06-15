@@ -53,7 +53,8 @@ public class AuthController {
 
     @Operation(
             summary = "회원가입",
-            description = "이메일, 비밀번호, 사용자 이름 등의 정보를 입력받아 회원가입을 처리합니다. 이메일 인증도 함께 처리됩니다."
+            description = "이메일, 비밀번호, 사용자 이름 등의 정보를 입력받아 회원가입을 처리합니다." +
+                    "회원가입 전 반드시 휴대폰 인증을 완료해야 하며, 이메일 인증 링크도 함께 발송됩니다."
     )
     @Tag(name = "인증 API", description = "회원가입, 로그인, 인증 관련 API입니다.")
     @PostMapping("/auth/signup")
