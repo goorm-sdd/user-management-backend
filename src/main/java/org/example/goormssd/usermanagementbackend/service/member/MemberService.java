@@ -7,7 +7,6 @@ import org.example.goormssd.usermanagementbackend.dto.member.request.UpdatePassw
 import org.example.goormssd.usermanagementbackend.dto.member.response.MyProfileResponseDto;
 import org.example.goormssd.usermanagementbackend.repository.MemberRepository;
 import org.example.goormssd.usermanagementbackend.repository.PhoneVerificationRepository;
-import org.example.goormssd.usermanagementbackend.service.auth.EmailService;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
