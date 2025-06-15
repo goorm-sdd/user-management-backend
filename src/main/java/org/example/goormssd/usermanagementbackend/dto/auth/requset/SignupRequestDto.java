@@ -1,9 +1,6 @@
 package org.example.goormssd.usermanagementbackend.dto.auth.requset;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.example.goormssd.usermanagementbackend.validation.NoTripleRepeat;
@@ -35,6 +32,12 @@ public class SignupRequestDto {
     @Pattern(regexp = "^010\\d{8}$", message = "올바른 형식의 전화번호여야 합니다.")
     private String phoneNumber;
 
+    @NotBlank(message = "인증 코드는 필수입니다.")
+    @Pattern(regexp = "^\\d{6}$", message = "인증 코드는 6자리 숫자여야 합니다.")
     private String code;
 
+    @AssertTrue(message = "비밀번호와 비밀번호 확인이 일치하지 않습니다.")
+    public boolean isPasswordMatching() {
+        return password != null && password.equals(passwordCheck);
+    }
 }
