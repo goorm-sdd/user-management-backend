@@ -122,6 +122,12 @@ public class AuthService {
             );
         }
 
+        if (member.getStatus() == Member.Status.DELETED) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN, "탈퇴된 회원입니다. 로그인이 불가능합니다."
+            );
+        }
+
         // AccessToken은 클라이언트가 저장 (서버 저장 불필요)
         // DB에는 RefreshToken만 저장 (보안 이슈 최소화)
         // 아직 명확한 해답을 찾지 못했음..
