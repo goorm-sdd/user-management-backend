@@ -17,8 +17,8 @@ import org.example.goormssd.usermanagementbackend.dto.response.FindEmailResponse
 import org.example.goormssd.usermanagementbackend.dto.response.LoginResponseDto;
 import org.example.goormssd.usermanagementbackend.dto.response.RefreshTokenDto;
 import org.example.goormssd.usermanagementbackend.service.AuthService;
-import org.example.goormssd.usermanagementbackend.service.dto.LoginResult;
-import org.example.goormssd.usermanagementbackend.util.JwtUtil;
+import org.example.goormssd.usermanagementbackend.dto.response.LoginResult;
+import org.example.goormssd.usermanagementbackend.security.JwtUtil;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -119,7 +119,7 @@ public class AuthController {
                     .body(new ApiResponseDto<>(401, "AccessToken이 필요합니다.", null));
         }
         String accessToken = authHeader.substring(7);
-        if (!jwtUtil.validateToken(accessToken)) {
+        if (!jwtUtil.validateAccessToken(accessToken)) {
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
                     .body(new ApiResponseDto<>(401, "AccessToken이 유효하지 않습니다.", null));

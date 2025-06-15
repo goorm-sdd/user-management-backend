@@ -5,24 +5,32 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "phone_verification")
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Entity
+@Table(name = "phone_verification")
 public class PhoneVerification {
 
     @Id
-    private String phoneNumber; // 전화번호가 PK
+    private String phoneNumber;
 
     @Column(nullable = false)
-    private String code; // 인증 코드
+    private String code;
 
     @Column(nullable = false)
-    private LocalDateTime expiresAt; // 만료 시간
+    private LocalDateTime expiresAt;
 
     @Column(nullable = false)
-    private Boolean verified = false;
+    private boolean verified;
+
+    public void verify() {
+        this.verified = true;
+    }
+
+    public boolean isExpired() {
+        return expiresAt.isBefore(LocalDateTime.now());
+    }
+
 }

@@ -75,4 +75,13 @@ public class Member {
         }
     }
 
+    public void updatePassword(String encodedPassword) {
+        this.password = encodedPassword;
+    }
+
+    public void updatePhoneNumber(String newPhoneNumber) {
+        this.phoneNumber = newPhoneNumber;
+        this.modifiedAt = LocalDateTime.now(); // 변경 트리거
+    }
+
 }

@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.goormssd.usermanagementbackend.dto.request.PasswordVerifyRequestDto;
 import org.example.goormssd.usermanagementbackend.dto.response.ReauthResponseDto;
 import org.example.goormssd.usermanagementbackend.service.PasswordService;
-import org.example.goormssd.usermanagementbackend.util.JwtUtil;
+import org.example.goormssd.usermanagementbackend.security.JwtUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
