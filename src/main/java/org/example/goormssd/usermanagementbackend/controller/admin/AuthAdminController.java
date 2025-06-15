@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.goormssd.usermanagementbackend.dto.auth.requset.LoginRequestDto;
@@ -46,7 +47,7 @@ public class AuthAdminController {
                     description = "로그인 요청 DTO (이메일, 비밀번호)",
                     required = true
             )
-            @RequestBody LoginRequestDto loginRequest,
+            @Valid @RequestBody LoginRequestDto loginRequest,
             HttpServletResponse response) {
 
         LoginResult result = adminService.loginWithUserInfo(loginRequest);
