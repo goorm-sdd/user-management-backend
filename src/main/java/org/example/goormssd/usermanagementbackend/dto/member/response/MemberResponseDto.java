@@ -1,6 +1,7 @@
 package org.example.goormssd.usermanagementbackend.dto.member.response;
 
 import lombok.*;
+import org.example.goormssd.usermanagementbackend.domain.Member;
 
 import java.time.LocalDateTime;
 
@@ -18,4 +19,18 @@ public class MemberResponseDto {
     private String status;        // ACTIVE or DELETED
     private boolean emailVerified;
     private LocalDateTime createdAt;
+
+    public static MemberResponseDto from(Member member) {
+        return MemberResponseDto.builder()
+                .id(member.getId())
+                .username(member.getUsername())
+                .email(member.getEmail())
+                .phoneNumber(member.getPhoneNumber())
+                .role(member.getRole().name())
+                .status(member.getStatus().name().toLowerCase())
+                .emailVerified(member.isEmailVerified())
+                .createdAt(member.getCreatedAt())
+                .build();
+    }
+
 }

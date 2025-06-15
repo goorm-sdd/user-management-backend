@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.example.goormssd.usermanagementbackend.domain.Member;
 import org.example.goormssd.usermanagementbackend.dto.admin.request.UpdateStatusRequestDto;
 import org.example.goormssd.usermanagementbackend.dto.common.ApiResponseDto;
 import org.example.goormssd.usermanagementbackend.dto.admin.response.DashboardResponseDto;
@@ -50,13 +51,117 @@ public class AdminMemberController {
             @Parameter(description = "회원 상태 (active/deleted)", example = "active")
             @RequestParam(name = "status", required = false) String status
     ) {
-        DashboardResponseDto responseDto = adminMemberService.getDashboard(
-                pageNum, pageLimit, emailVerified, status);
+        Member.Status statusEnum;
+        try {
+            statusEnum = parseStatus(status);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(ApiResponseDto.of(400, e.getMessage(), null));
+        }
 
-        ApiResponseDto<DashboardResponseDto> response =
-                ApiResponseDto.of(200, "대시 보드 조회 성공", responseDto);
-        return ResponseEntity.ok(response);
+        DashboardResponseDto responseDto = adminMemberService.getDashboard(pageNum, pageLimit, emailVerified, statusEnum);
+        return ResponseEntity.ok(ApiResponseDto.of(200, "대시 보드 조회 성공", responseDto));
     }
+
+
+    @Operation(
+            summary = "회원 상세 정보 조회",
+            description = "회원 ID를 기반으로 해당 사용자의 상세 정보를 조회합니다.",
+            security = @SecurityRequirement(name = "AccessToken")
+    )
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Tag(name = "관리자 API", description = "관리자 전용 API입니다.")
+    public ResponseEntity<ApiResponseDto<MemberDetailResponseDto>> getMemberDetail(
+            @Parameter(description = "회원 ID", example = "1")
+            @PathVariable Long id
+    ) {
+        MemberDetailResponseDto dto = adminMemberService.getMemberDetailById(id);
+        return ResponseEntity.ok(ApiResponseDto.of(200, "User information retrieved successfully.", dto));
+    }
+
+    @Operation(
+            summary = "회원 검색",
+            description = "회원의 이메일 또는 사용자 이름으로 검색합니다. 두 항목을 동시에 사용할 수 없습니다.",
+            security = @SecurityRequirement(name = "AccessToken")
+    )
+    @GetMapping("/search")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Tag(name = "관리자 API", description = "관리자 전용 API입니다.")
+    public ResponseEntity<ApiResponseDto<MemberListResponseDto>> searchMembers(
+            @Parameter(description = "이메일로 검색 (username과 동시 사용 불가)", example = "user@example.com")
+            @RequestParam(required = false) String email,
+
+            @Parameter(description = "사용자 이름으로 검색 (email과 동시 사용 불가)", example = "홍길동")
+            @RequestParam(required = false) String username,
+
+            @Parameter(description = "페이지 번호", example = "1")
+            @RequestParam(name = "pageNum", defaultValue = "1") int pageNum,
+
+            @Parameter(description = "한 페이지당 회원 수", example = "10")
+            @RequestParam(name = "pageLimit", defaultValue = "10") int pageLimit,
+
+            @Parameter(description = "정렬 기준 컬럼명", example = "createdAt")
+            @RequestParam(name = "sortBy", defaultValue = "createdAt") String sortBy,
+
+            @Parameter(description = "정렬 방향 (asc 또는 desc)", example = "desc")
+            @RequestParam(name = "sortDir", defaultValue = "desc") String sortDir,
+
+            @Parameter(description = "이메일 인증 여부 (true/false)", example = "true")
+            @RequestParam(name = "emailVerified", required = false) Boolean emailVerified,
+
+            @Parameter(description = "회원 상태 (active/deleted)", example = "active")
+            @RequestParam(name = "status", required = false) String status
+    ) {
+        // email과 username 동시 사용 제한
+        if (email != null && username != null) {
+            return ResponseEntity.badRequest().body(ApiResponseDto.of(400, "email과 username은 동시에 검색할 수 없습니다.", null));
+        }
+
+        Member.Status statusEnum;
+        try {
+            statusEnum = parseStatus(status);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(ApiResponseDto.of(400, e.getMessage(), null));
+        }
+
+        MemberListResponseDto dto = adminMemberService.searchMembers(
+                email, username, pageNum, pageLimit, sortBy, sortDir, emailVerified, statusEnum);
+
+        return ResponseEntity.ok(ApiResponseDto.of(200, "회원 검색 성공", dto));
+    }
+
+    private Member.Status parseStatus(String statusStr) {
+        if (statusStr == null || statusStr.isBlank()) return null;
+        try {
+            return Member.Status.valueOf(statusStr.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("status는 active 또는 deleted만 가능합니다.");
+        }
+    }
+
+    @PatchMapping("/status/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(
+            summary = "회원 상태 변경 (ADMIN)",
+            description = "관리자가 회원의 상태를 변경합니다. 'active' 또는 'deleted' 중 하나를 입력해야 합니다.",
+            security = @SecurityRequirement(name = "AccessToken")
+    )
+    @Tag(name = "관리자 API", description = "관리자 전용 API입니다.")
+    public ResponseEntity<ApiResponseDto<Void>> updateUserStatus(
+            @Parameter(description = "회원 ID", example = "1")
+            @PathVariable Long id,
+
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "변경할 회원 상태 ('active' 또는 'deleted')",
+                    required = true,
+                    content = @Content(schema = @Schema(implementation = UpdateStatusRequestDto.class))
+            )
+            @RequestBody UpdateStatusRequestDto requestDto) {
+
+        adminMemberService.updateStatus(id, requestDto.getStatus());
+        return ResponseEntity.ok(ApiResponseDto.of(200, "User status has been updated.", null));
+    }
+
 
     @Operation(
             summary = "전체 회원 조회",
@@ -137,92 +242,5 @@ public class AdminMemberController {
         return ResponseEntity.ok(
                 ApiResponseDto.of(200, "이메일 미인증 회원 조회 성공", dto)
         );
-    }
-
-    @Operation(
-            summary = "회원 상세 정보 조회",
-            description = "회원 ID를 기반으로 해당 사용자의 상세 정보를 조회합니다.",
-            security = @SecurityRequirement(name = "AccessToken")
-    )
-    @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    @Tag(name = "관리자 API", description = "관리자 전용 API입니다.")
-    public ResponseEntity<ApiResponseDto<MemberDetailResponseDto>> getMemberDetail(
-            @Parameter(description = "회원 ID", example = "1")
-            @PathVariable Long id
-    ) {
-        MemberDetailResponseDto dto = adminMemberService.getMemberDetailById(id);
-        return ResponseEntity.ok(ApiResponseDto.of(200, "User information retrieved successfully.", dto));
-    }
-
-    @Operation(
-            summary = "회원 검색",
-            description = "회원의 이메일 또는 사용자 이름으로 검색합니다. 두 항목을 동시에 사용할 수 없습니다.",
-            security = @SecurityRequirement(name = "AccessToken")
-    )
-    @GetMapping("/search")
-    @PreAuthorize("hasRole('ADMIN')")
-    @Tag(name = "관리자 API", description = "관리자 전용 API입니다.")
-    public ResponseEntity<ApiResponseDto<MemberListResponseDto>> searchMembers(
-            @Parameter(description = "이메일로 검색 (username과 동시 사용 불가)", example = "user@example.com")
-            @RequestParam(required = false) String email,
-
-            @Parameter(description = "사용자 이름으로 검색 (email과 동시 사용 불가)", example = "홍길동")
-            @RequestParam(required = false) String username,
-
-            @Parameter(description = "페이지 번호", example = "1")
-            @RequestParam(name = "pageNum", defaultValue = "1") int pageNum,
-
-            @Parameter(description = "한 페이지당 회원 수", example = "10")
-            @RequestParam(name = "pageLimit", defaultValue = "10") int pageLimit,
-
-            @Parameter(description = "정렬 기준 컬럼명", example = "createdAt")
-            @RequestParam(name = "sortBy", defaultValue = "createdAt") String sortBy,
-
-            @Parameter(description = "정렬 방향 (asc 또는 desc)", example = "desc")
-            @RequestParam(name = "sortDir", defaultValue = "desc") String sortDir,
-
-            @Parameter(description = "이메일 인증 여부 (true/false)", example = "true")
-            @RequestParam(name = "emailVerified", required = false) Boolean emailVerified,
-
-            @Parameter(description = "회원 상태 (active/deleted)", example = "active")
-            @RequestParam(name = "status", required = false) String status
-    ) {
-        // email과 username 동시 사용 제한
-        if (email != null && username != null) {
-            return ResponseEntity.badRequest().body(
-                    ApiResponseDto.of(400, "email과 username은 동시에 검색할 수 없습니다.", null)
-            );
-        }
-
-        MemberListResponseDto dto = adminMemberService.searchMembers(
-                email, username, pageNum, pageLimit, sortBy, sortDir, emailVerified, status
-        );
-        return ResponseEntity.ok(
-                ApiResponseDto.of(200, "회원 검색 성공", dto)
-        );
-    }
-
-    @PatchMapping("/status/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    @Operation(
-            summary = "회원 상태 변경 (ADMIN)",
-            description = "관리자가 회원의 상태를 변경합니다. 'active' 또는 'deleted' 중 하나를 입력해야 합니다.",
-            security = @SecurityRequirement(name = "AccessToken")
-    )
-    @Tag(name = "관리자 API", description = "관리자 전용 API입니다.")
-    public ResponseEntity<ApiResponseDto<Void>> updateUserStatus(
-            @Parameter(description = "회원 ID", example = "1")
-            @PathVariable Long id,
-
-            @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "변경할 회원 상태 ('active' 또는 'deleted')",
-                    required = true,
-                    content = @Content(schema = @Schema(implementation = UpdateStatusRequestDto.class))
-            )
-            @RequestBody UpdateStatusRequestDto requestDto) {
-
-        adminMemberService.updateStatus(id, requestDto.getStatus());
-        return ResponseEntity.ok(ApiResponseDto.of(200, "User status has been updated.", null));
     }
 }
