@@ -1,5 +1,6 @@
 package org.example.goormssd.usermanagementbackend.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -7,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.goormssd.usermanagementbackend.dto.common.ApiResponseDto;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -65,10 +67,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     : jwtUtil.validateAccessToken(token);
 
             if (isValid) {
-                authenticateToken(token, request);
+                try {
+                    authenticateToken(token, request);
+                } catch (Exception ex) {
+                    log.warn("[JwtFilter] 토큰 인증 실패: {}", ex.getMessage());
+                    sendJsonErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "토큰 인증에 실패했습니다.");
+                    return;
+                }
             } else {
                 log.warn("[JwtFilter] 유효하지 않은 토큰: {}", token);
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "유효하지 않은 토큰입니다.");
+                sendJsonErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "유효하지 않은 토큰입니다.");
                 return;
             }
         }
@@ -95,17 +103,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 
     private void authenticateToken(String token, HttpServletRequest request) {
-        try {
-            String email = jwtUtil.extractEmail(token);
-            UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-            UsernamePasswordAuthenticationToken authToken =
-                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-            authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-            SecurityContextHolder.getContext().setAuthentication(authToken);
-            log.info("[JwtFilter] Authentication successful for user: {}", email);
-        } catch (Exception ex) {
-            log.warn("[JwtFilter] Token authentication failed: {}", ex.getMessage());
-            SecurityContextHolder.clearContext();
-        }
+        String email = jwtUtil.extractEmail(token);
+        UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+        UsernamePasswordAuthenticationToken authToken =
+                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(authToken);
+        log.info("[JwtFilter] Authentication successful for user: {}", email);
+    }
+
+    private void sendJsonErrorResponse(HttpServletResponse response, int status, String message) throws IOException {
+        response.setStatus(status);
+        response.setContentType("application/json;charset=UTF-8");
+
+        ApiResponseDto<?> errorDto = ApiResponseDto.error(status, message);
+        ObjectMapper objectMapper = new ObjectMapper();
+        response.getWriter().write(objectMapper.writeValueAsString(errorDto));
     }
 }
