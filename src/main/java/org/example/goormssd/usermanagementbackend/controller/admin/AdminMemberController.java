@@ -77,7 +77,7 @@ public class AdminMemberController {
             @PathVariable Long id
     ) {
         MemberDetailResponseDto dto = adminMemberService.getMemberDetailById(id);
-        return ResponseEntity.ok(ApiResponseDto.of(200, "User information retrieved successfully.", dto));
+        return ResponseEntity.ok(ApiResponseDto.of(200, "회원 상세 정보 조회 성공", dto));
     }
 
     @Operation(
@@ -160,7 +160,7 @@ public class AdminMemberController {
             @Valid @RequestBody UpdateStatusRequestDto requestDto) {
 
         adminMemberService.updateStatus(id, requestDto.getStatus());
-        return ResponseEntity.ok(ApiResponseDto.of(200, "User status has been updated.", null));
+        return ResponseEntity.ok(ApiResponseDto.of(200, "회원 상태 변경 성공", null));
     }
 
 
