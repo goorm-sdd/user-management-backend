@@ -2,15 +2,19 @@ package org.example.goormssd.usermanagementbackend.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.goormssd.usermanagementbackend.domain.Member;
+import org.example.goormssd.usermanagementbackend.domain.PhoneVerification;
 import org.example.goormssd.usermanagementbackend.dto.request.SignupRequestDto;
 import org.example.goormssd.usermanagementbackend.dto.request.UpdatePasswordRequestDto;
 import org.example.goormssd.usermanagementbackend.dto.response.MyProfileResponseDto;
 import org.example.goormssd.usermanagementbackend.repository.MemberRepository;
+import org.example.goormssd.usermanagementbackend.repository.PhoneVerificationRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +24,7 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final EmailVerificationService emailVerificationService;
     private final EmailService emailService;
+    private final PhoneVerificationRepository phoneVerificationRepository;
 
     public void signup(SignupRequestDto requestDto) {
         if (!requestDto.getPassword().equals(requestDto.getPasswordCheck())) {
@@ -95,5 +100,27 @@ public class MemberService {
 
         String encoded = passwordEncoder.encode(dto.getNewPassword());
         member.updatePassword(encoded);  // 영속 상태에서 수행 → dirty checking OK
+    }
+
+
+    @Transactional
+    public void updatePhoneNumber(Member member, String newPhoneNumber) {
+        if (member.getPhoneNumber().equals(newPhoneNumber)) {
+            throw new IllegalArgumentException("기존 전화번호와 동일합니다.");
+        }
+
+        PhoneVerification verification = phoneVerificationRepository.findById(newPhoneNumber)
+                .orElseThrow(() -> new IllegalArgumentException("전화번호 인증 기록이 없습니다."));
+
+        if (!verification.isVerified()) {
+            throw new IllegalArgumentException("전화번호 인증이 완료되지 않았습니다.");
+        }
+
+        // 영속 객체로 다시 조회
+        Member persistedMember = memberRepository.findById(member.getId())
+                .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
+
+        persistedMember.updatePhoneNumber(newPhoneNumber);
+        persistedMember.setModifiedAt(LocalDateTime.now()); // 트리거 역할
     }
 }
