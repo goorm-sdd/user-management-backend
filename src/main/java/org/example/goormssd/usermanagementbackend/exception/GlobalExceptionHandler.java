@@ -50,4 +50,14 @@ public class GlobalExceptionHandler {
                 .badRequest()
                 .body(ApiResponseDto.of(400, "입력값이 유효하지 않습니다.", errors));
     }
+
+    @ExceptionHandler(GlobalException.class)
+    public ResponseEntity<ApiResponseDto<?>> handleGlobalException(GlobalException ex) {
+        return ResponseEntity
+                .status(ex.getErrorCode().getStatus())
+                .body(ApiResponseDto.error(
+                        ex.getErrorCode().getStatus().value(),
+                        ex.getErrorCode().getMessage()
+                ));
+    }
 }
