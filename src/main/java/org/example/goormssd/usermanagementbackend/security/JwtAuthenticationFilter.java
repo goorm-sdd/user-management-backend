@@ -1,4 +1,4 @@
-package org.example.goormssd.usermanagementbackend.util;
+package org.example.goormssd.usermanagementbackend.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -7,7 +7,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.goormssd.usermanagementbackend.service.CustomUserDetailsService;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -40,15 +39,39 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return EXCLUDE_URLS.stream().anyMatch(path::startsWith);
     }
 
+
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
         log.debug("[JwtFilter] Request URI: {}", request.getRequestURI());
 
-        resolveToken(request)
-                .filter(jwtUtil::validateToken)
-                .ifPresent(token -> authenticateToken(token, request));
+        Optional<String> tokenOpt = resolveToken(request);
+        if (tokenOpt.isPresent()) {
+            String token = tokenOpt.get();
+
+            // 민감 경로인지 확인
+            String path = request.getRequestURI();
+            String method = request.getMethod();
+            boolean isSensitivePath = "PATCH".equals(method) && (
+                    path.equals("/api/users/me/password") ||
+                            path.equals("/api/users/me/phone") ||
+                            path.equals("/api/users/me/status") ||
+                            path.startsWith("/api/admin/users/status")
+            );
+
+            boolean isValid = isSensitivePath
+                    ? jwtUtil.validateReauthToken(token)
+                    : jwtUtil.validateAccessToken(token);
+
+            if (isValid) {
+                authenticateToken(token, request);
+            } else {
+                log.warn("[JwtFilter] 유효하지 않은 토큰: {}", token);
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "유효하지 않은 토큰입니다.");
+                return;
+            }
+        }
 
         filterChain.doFilter(request, response);
     }

@@ -1,8 +1,7 @@
-package org.example.goormssd.usermanagementbackend.service.dto;
+package org.example.goormssd.usermanagementbackend.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.example.goormssd.usermanagementbackend.dto.response.LoginUserDto;
 
 
 @Getter

@@ -9,7 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.example.goormssd.usermanagementbackend.util.NoTripleRepeat;
+import org.example.goormssd.usermanagementbackend.validation.NoTripleRepeat;
 
 @Getter
 @Setter
