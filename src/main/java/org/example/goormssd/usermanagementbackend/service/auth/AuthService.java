@@ -191,7 +191,7 @@ public class AuthService {
     }
 
     public String findEmailByUsernameAndPhone(FindEmailRequestDto dto) {
-//        phoneVerificationService.verifyCode(dto.getPhoneNumber(), dto.getCode()); 추후 핸드폰 인증 사용을 위해서 작성하고
+        phoneVerificationService.verifyCode(dto.getPhoneNumber(), dto.getCode());
         return memberRepository.findAll().stream()
                 .filter(m -> m.getUsername().equals(dto.getUsername())
                         && m.getPhoneNumber().equals(dto.getPhoneNumber()))
