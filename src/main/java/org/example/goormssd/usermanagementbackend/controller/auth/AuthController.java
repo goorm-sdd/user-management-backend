@@ -104,7 +104,7 @@ public class AuthController {
     public ResponseEntity<ApiResponseDto<LoginResponseDto>> login(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "로그인 요청 정보 (이메일, 비밀번호)", required = true)
-            @RequestBody LoginRequestDto loginRequest,
+            @Valid @RequestBody LoginRequestDto loginRequest,
             @Parameter(hidden = true) HttpServletResponse response) {
 
         // var 사용을 통해 타입 추론을 활용할 수 있지만, 명시적인 타입 선언이 가독성에 더 좋을 수 있음
@@ -260,7 +260,7 @@ public class AuthController {
     public ResponseEntity<ApiResponseDto<FindEmailResponseDto>> findEmail(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "이름과 전화번호", required = true)
-            @RequestBody FindEmailRequestDto request) {
+            @Valid @RequestBody FindEmailRequestDto request) {
         String email = authService.findEmailByUsernameAndPhone(request);
         return ResponseEntity.ok(new ApiResponseDto<>(200, "Email (ID) retrieved successfully.", new FindEmailResponseDto(email)));
     }
@@ -274,7 +274,7 @@ public class AuthController {
     public ResponseEntity<ApiResponseDto<Void>> resetPassword(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "이름, 이메일, 전화번호", required = true)
-            @RequestBody FindPasswordRequestDto request) {
+            @Valid @RequestBody FindPasswordRequestDto request) {
         authService.resetPasswordAndSendEmail(request);
         return ResponseEntity.ok(new ApiResponseDto<>(200, "Temporary password has been sent via email.", null));
     }
