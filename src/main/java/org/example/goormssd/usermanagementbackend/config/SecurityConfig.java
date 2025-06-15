@@ -1,8 +1,10 @@
 package org.example.goormssd.usermanagementbackend.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.goormssd.usermanagementbackend.dto.common.ApiResponseDto;
 import org.example.goormssd.usermanagementbackend.security.CustomUserDetailsService;
 import org.example.goormssd.usermanagementbackend.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
@@ -22,6 +24,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.io.IOException;
 import java.util.List;
 
 import static org.springframework.http.HttpMethod.*;
@@ -94,15 +97,14 @@ public class SecurityConfig {
 
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((req, res, expt) -> {
-                            log.warn("인증 실패: {}", expt.getMessage());
-                            res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "인증이 필요합니다.");
+                            log.warn("[Security] 인증 실패: {}", expt.getMessage());
+                            sendJsonError(res, HttpServletResponse.SC_UNAUTHORIZED, "인증이 필요합니다.");
                         })
                         .accessDeniedHandler((req, res, expt) -> {
-                            log.warn("접근 거부: {}", expt.getMessage());
-                            res.sendError(HttpServletResponse.SC_FORBIDDEN, "접근이 거부되었습니다.");
+                            log.warn("[Security] 접근 거부: {}", expt.getMessage());
+                            sendJsonError(res, HttpServletResponse.SC_FORBIDDEN, "접근이 거부되었습니다.");
                         })
                 );
-
         return http.build();
     }
 
@@ -130,5 +132,14 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+
+    private void sendJsonError(HttpServletResponse response, int status, String message) throws IOException {
+        response.setStatus(status);
+        response.setContentType("application/json;charset=UTF-8");
+
+        ApiResponseDto<?> errorDto = ApiResponseDto.error(status, message);
+        ObjectMapper objectMapper = new ObjectMapper();
+        response.getWriter().write(objectMapper.writeValueAsString(errorDto));
     }
 }

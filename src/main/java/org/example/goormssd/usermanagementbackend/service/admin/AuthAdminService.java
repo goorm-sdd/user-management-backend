@@ -4,10 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.example.goormssd.usermanagementbackend.domain.Member;
 import org.example.goormssd.usermanagementbackend.domain.Token;
 import org.example.goormssd.usermanagementbackend.dto.auth.requset.LoginRequestDto;
+import org.example.goormssd.usermanagementbackend.dto.auth.response.LoginResult;
 import org.example.goormssd.usermanagementbackend.dto.auth.response.LoginUserDto;
+import org.example.goormssd.usermanagementbackend.exception.ErrorCode;
+import org.example.goormssd.usermanagementbackend.exception.GlobalException;
 import org.example.goormssd.usermanagementbackend.repository.MemberRepository;
 import org.example.goormssd.usermanagementbackend.repository.TokenRepository;
-import org.example.goormssd.usermanagementbackend.dto.auth.response.LoginResult;
 import org.example.goormssd.usermanagementbackend.security.JwtUtil;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,15 +27,15 @@ public class AuthAdminService {
 
     public LoginResult loginWithUserInfo(LoginRequestDto loginRequest) {
         Member member = memberRepository.findByEmail(loginRequest.getEmail())
-                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
 
 
         if (member.getRole() != Member.Role.ADMIN) {
-            throw new RuntimeException("관리자 권한이 없습니다.");
+            throw new GlobalException(ErrorCode.NOT_ADMIN);
         }
 
         if (!passwordEncoder.matches(loginRequest.getPassword(), member.getPassword())) {
-            throw new RuntimeException("비밀번호가 올바르지 않습니다.");
+            throw new GlobalException(ErrorCode.WRONG_PASSWORD);
         }
 
 //        if (!member.isEmailVerified()) {

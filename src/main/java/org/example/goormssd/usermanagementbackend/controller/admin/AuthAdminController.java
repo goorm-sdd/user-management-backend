@@ -7,14 +7,15 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.goormssd.usermanagementbackend.dto.auth.requset.LoginRequestDto;
-import org.example.goormssd.usermanagementbackend.dto.common.ApiResponseDto;
 import org.example.goormssd.usermanagementbackend.dto.auth.response.LoginResponseDto;
-import org.example.goormssd.usermanagementbackend.service.admin.AuthAdminService;
 import org.example.goormssd.usermanagementbackend.dto.auth.response.LoginResult;
+import org.example.goormssd.usermanagementbackend.dto.common.ApiResponseDto;
 import org.example.goormssd.usermanagementbackend.security.JwtUtil;
+import org.example.goormssd.usermanagementbackend.service.admin.AuthAdminService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -46,7 +47,7 @@ public class AuthAdminController {
                     description = "로그인 요청 DTO (이메일, 비밀번호)",
                     required = true
             )
-            @RequestBody LoginRequestDto loginRequest,
+            @Valid @RequestBody LoginRequestDto loginRequest,
             HttpServletResponse response) {
 
         LoginResult result = adminService.loginWithUserInfo(loginRequest);
@@ -63,9 +64,8 @@ public class AuthAdminController {
 
         LoginResponseDto responseBody = new LoginResponseDto(result.getAccessToken(), result.getUser());
 
-        return ResponseEntity.ok(
-                new ApiResponseDto<>(200, "Login successful", responseBody)
-        );
+        return ResponseEntity.ok(ApiResponseDto.of(200, "로그인이 완료되었습니다.", responseBody));
+
     }
 
     @Operation(
@@ -82,15 +82,14 @@ public class AuthAdminController {
 
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .body(new ApiResponseDto<>(401, "AccessToken이 필요합니다.", null));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponseDto.error(401, "AccessToken이 필요합니다."));
         }
+
         String accessToken = authHeader.substring(7);
         if (!jwtUtil.validateAccessToken(accessToken)) {
-            return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .body(new ApiResponseDto<>(401, "AccessToken이 유효하지 않습니다.", null));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponseDto.error(401, "유효하지 않은 AccessToken입니다."));
         }
 
         if (request.getCookies() != null) {
@@ -128,6 +127,6 @@ public class AuthAdminController {
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, expiredCookie.toString());
 
-        return ResponseEntity.ok(new ApiResponseDto<>(200, "Logout successful.", null));
+        return ResponseEntity.ok(ApiResponseDto.of(200, "로그아웃이 완료되었습니다.", null));
     }
 }
