@@ -39,15 +39,39 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return EXCLUDE_URLS.stream().anyMatch(path::startsWith);
     }
 
+
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
         log.debug("[JwtFilter] Request URI: {}", request.getRequestURI());
 
-        resolveToken(request)
-                .filter(jwtUtil::validateToken)
-                .ifPresent(token -> authenticateToken(token, request));
+        Optional<String> tokenOpt = resolveToken(request);
+        if (tokenOpt.isPresent()) {
+            String token = tokenOpt.get();
+
+            // 민감 경로인지 확인
+            String path = request.getRequestURI();
+            String method = request.getMethod();
+            boolean isSensitivePath = "PATCH".equals(method) && (
+                    path.equals("/api/users/me/password") ||
+                            path.equals("/api/users/me/phone") ||
+                            path.equals("/api/users/me") ||
+                            path.startsWith("/api/admin/users/status")
+            );
+
+            boolean isValid = isSensitivePath
+                    ? jwtUtil.validateReauthToken(token)
+                    : jwtUtil.validateAccessToken(token);
+
+            if (isValid) {
+                authenticateToken(token, request);
+            } else {
+                log.warn("[JwtFilter] 유효하지 않은 토큰: {}", token);
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "유효하지 않은 토큰입니다.");
+                return;
+            }
+        }
 
         filterChain.doFilter(request, response);
     }

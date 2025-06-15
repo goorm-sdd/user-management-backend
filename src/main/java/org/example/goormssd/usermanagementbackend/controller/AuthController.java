@@ -119,7 +119,7 @@ public class AuthController {
                     .body(new ApiResponseDto<>(401, "AccessToken이 필요합니다.", null));
         }
         String accessToken = authHeader.substring(7);
-        if (!jwtUtil.validateToken(accessToken)) {
+        if (!jwtUtil.validateAccessToken(accessToken)) {
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
                     .body(new ApiResponseDto<>(401, "AccessToken이 유효하지 않습니다.", null));

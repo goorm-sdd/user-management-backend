@@ -77,12 +77,25 @@ public class JwtUtil {
     }
 
     // 토큰 유효성 검사
-    public boolean validateToken(String token) {
+    public boolean validateAccessToken(String token) {
         try {
-            parseClaims(token);
-            return true;
+            Claims claims = parseClaims(token).getBody();
+            Object reauth = claims.get("reauth");
+            // reauth가 없거나 false여야 accessToken으로 인정
+            return reauth == null || Boolean.FALSE.equals(reauth);
         } catch (JwtException | IllegalArgumentException e) {
-            log.warn("[JWT 검증 실패] 원인: {}", e.getMessage());
+            log.warn("[AccessToken 검증 실패] 원인: {}", e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean validateReauthToken(String token) {
+        try {
+            Claims claims = parseClaims(token).getBody();
+            Object reauth = claims.get("reauth");
+            return Boolean.TRUE.equals(reauth);
+        } catch (JwtException | IllegalArgumentException e) {
+            log.warn("[ReauthToken 검증 실패] 원인: {}", e.getMessage());
             return false;
         }
     }
