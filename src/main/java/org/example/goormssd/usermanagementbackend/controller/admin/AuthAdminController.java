@@ -64,9 +64,8 @@ public class AuthAdminController {
 
         LoginResponseDto responseBody = new LoginResponseDto(result.getAccessToken(), result.getUser());
 
-        return ResponseEntity.ok(
-                new ApiResponseDto<>(200, "Login successful", responseBody)
-        );
+        return ResponseEntity.ok(ApiResponseDto.of(200, "로그인이 완료되었습니다.", responseBody));
+
     }
 
     @Operation(
@@ -83,15 +82,14 @@ public class AuthAdminController {
 
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .body(new ApiResponseDto<>(401, "AccessToken이 필요합니다.", null));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponseDto.error(401, "AccessToken이 필요합니다."));
         }
+
         String accessToken = authHeader.substring(7);
         if (!jwtUtil.validateAccessToken(accessToken)) {
-            return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .body(new ApiResponseDto<>(401, "AccessToken이 유효하지 않습니다.", null));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponseDto.error(401, "유효하지 않은 AccessToken입니다."));
         }
 
         if (request.getCookies() != null) {
@@ -129,6 +127,6 @@ public class AuthAdminController {
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, expiredCookie.toString());
 
-        return ResponseEntity.ok(new ApiResponseDto<>(200, "Logout successful.", null));
+        return ResponseEntity.ok(ApiResponseDto.of(200, "로그아웃이 완료되었습니다.", null));
     }
 }
