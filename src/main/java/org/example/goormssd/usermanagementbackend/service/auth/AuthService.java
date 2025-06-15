@@ -5,6 +5,8 @@ import org.example.goormssd.usermanagementbackend.domain.Member;
 import org.example.goormssd.usermanagementbackend.domain.Token;
 import org.example.goormssd.usermanagementbackend.dto.auth.requset.*;
 import org.example.goormssd.usermanagementbackend.dto.auth.response.LoginUserDto;
+import org.example.goormssd.usermanagementbackend.exception.ErrorCode;
+import org.example.goormssd.usermanagementbackend.exception.GlobalException;
 import org.example.goormssd.usermanagementbackend.repository.MemberRepository;
 import org.example.goormssd.usermanagementbackend.repository.TokenRepository;
 import org.example.goormssd.usermanagementbackend.dto.auth.response.LoginResult;
@@ -73,11 +75,11 @@ public class AuthService {
 
     public void signup(SignupRequestDto requestDto) {
         if (!requestDto.getPassword().equals(requestDto.getPasswordCheck())) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            throw new GlobalException(ErrorCode.PASSWORDS_DO_NOT_MATCH);
         }
 
         if (memberRepository.existsByEmail(requestDto.getEmail())) {
-            throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
+            throw new GlobalException(ErrorCode.EMAIL_ALREADY_EXISTS);
         }
 
         phoneVerificationService.verifyCode(requestDto.getPhoneNumber(), requestDto.getCode());
@@ -114,22 +116,18 @@ public class AuthService {
     public LoginResult loginWithUserInfo(LoginRequestDto loginRequest) {
         // Token 필드명 member 반영
         Member member = memberRepository.findByEmail(loginRequest.getEmail())
-                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
 
         if (!passwordEncoder.matches(loginRequest.getPassword(), member.getPassword())) {
-            throw new RuntimeException("비밀번호가 올바르지 않습니다.");
+            throw new GlobalException(ErrorCode.WRONG_PASSWORD);
         }
 
         if (!member.isEmailVerified()) {
-            throw new ResponseStatusException(
-                    HttpStatus.FORBIDDEN, "이메일 인증을 완료해야 로그인할 수 있습니다."
-            );
+            throw new GlobalException(ErrorCode.EMAIL_NOT_VERIFIED);
         }
 
         if (member.getStatus() == Member.Status.DELETED) {
-            throw new ResponseStatusException(
-                    HttpStatus.FORBIDDEN, "탈퇴된 회원입니다. 로그인이 불가능합니다."
-            );
+            throw new GlobalException(ErrorCode.MEMBER_DELETED);
         }
 
         // AccessToken은 클라이언트가 저장 (서버 저장 불필요)
@@ -202,15 +200,15 @@ public class AuthService {
                         && m.getPhoneNumber().equals(dto.getPhoneNumber()))
                 .map(Member::getEmail)
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("해당 사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
     }
 
     public void resetPasswordAndSendEmail(FindPasswordRequestDto dto) {
         Member member = memberRepository.findByEmail(dto.getEmail())
-                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new GlobalException(ErrorCode.EMAIL_NOT_FOUND));
 
         if (!member.getUsername().equals(dto.getUsername())) {
-            throw new RuntimeException("사용자 이름이 일치하지 않습니다.");
+            throw new GlobalException(ErrorCode.USERNAME_NOT_MATCH);
         }
 
         phoneVerificationService.verifyCode(member.getPhoneNumber(), dto.getCode());
