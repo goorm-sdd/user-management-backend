@@ -1,4 +1,4 @@
-package org.example.goormssd.usermanagementbackend.dto.request;
+package org.example.goormssd.usermanagementbackend.dto.admin.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

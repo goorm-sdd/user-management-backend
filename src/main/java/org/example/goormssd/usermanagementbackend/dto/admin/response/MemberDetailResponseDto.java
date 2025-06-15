@@ -1,4 +1,4 @@
-package org.example.goormssd.usermanagementbackend.dto.response;
+package org.example.goormssd.usermanagementbackend.dto.admin.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package org.example.goormssd.usermanagementbackend.dto.request;
+package org.example.goormssd.usermanagementbackend.dto.member.request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;

@@ -2,10 +2,10 @@ package org.example.goormssd.usermanagementbackend.service.admin;
 
 import lombok.RequiredArgsConstructor;
 import org.example.goormssd.usermanagementbackend.domain.Member;
-import org.example.goormssd.usermanagementbackend.dto.response.DashboardResponseDto;
-import org.example.goormssd.usermanagementbackend.dto.response.MemberDetailResponseDto;
-import org.example.goormssd.usermanagementbackend.dto.response.MemberListResponseDto;
-import org.example.goormssd.usermanagementbackend.dto.response.MemberResponseDto;
+import org.example.goormssd.usermanagementbackend.dto.admin.response.DashboardResponseDto;
+import org.example.goormssd.usermanagementbackend.dto.admin.response.MemberDetailResponseDto;
+import org.example.goormssd.usermanagementbackend.dto.admin.response.MemberListResponseDto;
+import org.example.goormssd.usermanagementbackend.dto.member.response.MemberResponseDto;
 import org.example.goormssd.usermanagementbackend.repository.MemberRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

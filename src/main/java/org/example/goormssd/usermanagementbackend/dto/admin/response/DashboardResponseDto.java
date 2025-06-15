@@ -1,9 +1,10 @@
-package org.example.goormssd.usermanagementbackend.dto.response;
+package org.example.goormssd.usermanagementbackend.dto.admin.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.example.goormssd.usermanagementbackend.dto.member.response.MemberResponseDto;
 
 import java.util.List;
 

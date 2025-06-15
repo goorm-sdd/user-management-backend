@@ -1,4 +1,4 @@
-package org.example.goormssd.usermanagementbackend.dto.request;
+package org.example.goormssd.usermanagementbackend.dto.auth.requset;
 
 import lombok.Getter;
 
