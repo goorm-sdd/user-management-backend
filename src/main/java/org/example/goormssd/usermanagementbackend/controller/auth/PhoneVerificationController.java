@@ -2,6 +2,7 @@ package org.example.goormssd.usermanagementbackend.controller.auth;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.goormssd.usermanagementbackend.dto.auth.requset.PhoneVerifyCodeRequestDto;
 import org.example.goormssd.usermanagementbackend.dto.auth.requset.PhoneVerifyRequestDto;
@@ -29,7 +30,7 @@ public class PhoneVerificationController {
     public ResponseEntity<?> sendCode(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "전화번호 입력 DTO", required = true)
-            @RequestBody PhoneVerifyRequestDto requestDto
+            @Valid @RequestBody PhoneVerifyRequestDto requestDto
     ) {
         phoneService.sendVerificationCode(requestDto.getPhoneNumber());
         return ResponseEntity.ok("인증번호가 발송되었습니다.");
@@ -44,7 +45,7 @@ public class PhoneVerificationController {
     public ResponseEntity<?> verifyCode(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "휴대폰 번호 + 인증번호 입력 DTO", required = true)
-            @RequestBody PhoneVerifyCodeRequestDto requestDto
+            @Valid @RequestBody PhoneVerifyCodeRequestDto requestDto
     ) {
         phoneService.verifyCode(requestDto.getPhoneNumber(), requestDto.getCode());
         return ResponseEntity.ok("인증이 완료되었습니다.");
