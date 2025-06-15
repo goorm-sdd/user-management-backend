@@ -35,7 +35,7 @@ public class AdminMemberService {
         Page<Member> page = memberRepository.searchMembers(condition, pageable);
 
         List<MemberResponseDto> users = page.getContent().stream()
-                .map(this::toDto)
+                .map(MemberResponseDto::from)
                 .collect(Collectors.toList());
 
         long sumUser = memberRepository.count();
@@ -82,7 +82,7 @@ public class AdminMemberService {
         Page<Member> page = memberRepository.searchMembers(condition, pageable);
 
         List<MemberResponseDto> users = page.getContent().stream()
-                .map(this::toDto)
+                .map(MemberResponseDto::from)
                 .collect(Collectors.toList());
 
         return new MemberListResponseDto(
@@ -108,19 +108,6 @@ public class AdminMemberService {
         }
 
         memberRepository.save(member);
-    }
-
-    private MemberResponseDto toDto(Member member) {
-        return new MemberResponseDto(
-                member.getId(),
-                member.getUsername(),
-                member.getEmail(),
-                member.getPhoneNumber(),
-                member.getRole().name(),
-                member.getStatus().name().toLowerCase(),
-                member.isEmailVerified(),
-                member.getCreatedAt()
-        );
     }
 
 
