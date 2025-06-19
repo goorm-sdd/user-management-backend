@@ -20,7 +20,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin(
-        origins = "http://localhost:5173",
+        origins = {
+                "http://localhost:5173",
+                "https://user-management-frontend-ruby.vercel.app/"
+        },
         allowCredentials = "true"
 )
 @RestController

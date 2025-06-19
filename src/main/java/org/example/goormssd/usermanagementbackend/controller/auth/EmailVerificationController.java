@@ -12,7 +12,10 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 
 @CrossOrigin(
-        origins = "http://localhost:5173",
+        origins = {
+                "http://localhost:5173",
+                "https://user-management-frontend-ruby.vercel.app/"
+        },
         allowCredentials = "true"
 )
 @RestController

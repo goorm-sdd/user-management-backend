@@ -31,7 +31,10 @@ import java.util.Map;
 import java.util.Optional;
 
 @CrossOrigin(
-        origins = "http://localhost:5173",
+        origins = {
+                "http://localhost:5173",
+                "https://user-management-frontend-ruby.vercel.app/"
+        },
         allowCredentials = "true"
 )
 @Slf4j
