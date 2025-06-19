@@ -39,7 +39,7 @@ public class EmailVerificationController {
         emailVerificationService.verifyEmailCode(code);
 
         // 인증 완료 후 프론트엔드의 인증 완료 페이지로 리디렉션
-        URI redirectUri = URI.create("http://localhost:5173");
+        URI redirectUri = URI.create("https://user-management-frontend-ruby.vercel.app/");
 
         return ResponseEntity.status(HttpStatus.FOUND)
                 .location(redirectUri)
