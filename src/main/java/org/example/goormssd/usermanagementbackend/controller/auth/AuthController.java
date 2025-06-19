@@ -113,7 +113,7 @@ public class AuthController {
                 .secure(true)
                 .path("/")
                 .maxAge(60 * 60 * 24 * 7)
-                .sameSite("Strict")
+                .sameSite("None")
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
 
@@ -198,7 +198,7 @@ public class AuthController {
         ResponseCookie expiredCookie = ResponseCookie.from("refreshToken", "")
                 .httpOnly(true)
                 .secure(true)
-                .sameSite("Strict")
+                .sameSite("None")
                 .path("/")
                 .maxAge(0)
                 .build();
