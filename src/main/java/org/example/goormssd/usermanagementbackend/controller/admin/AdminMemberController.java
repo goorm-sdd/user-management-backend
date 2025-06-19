@@ -6,13 +6,14 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.goormssd.usermanagementbackend.domain.Member;
 import org.example.goormssd.usermanagementbackend.dto.admin.request.UpdateStatusRequestDto;
-import org.example.goormssd.usermanagementbackend.dto.common.ApiResponseDto;
 import org.example.goormssd.usermanagementbackend.dto.admin.response.DashboardResponseDto;
 import org.example.goormssd.usermanagementbackend.dto.admin.response.MemberDetailResponseDto;
 import org.example.goormssd.usermanagementbackend.dto.admin.response.MemberListResponseDto;
+import org.example.goormssd.usermanagementbackend.dto.common.ApiResponseDto;
 import org.example.goormssd.usermanagementbackend.service.admin.AdminMemberService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -79,7 +80,7 @@ public class AdminMemberController {
             @PathVariable Long id
     ) {
         MemberDetailResponseDto dto = adminMemberService.getMemberDetailById(id);
-        return ResponseEntity.ok(ApiResponseDto.of(200, "User information retrieved successfully.", dto));
+        return ResponseEntity.ok(ApiResponseDto.of(200, "회원 상세 정보 조회 성공", dto));
     }
 
     @Operation(
@@ -159,10 +160,10 @@ public class AdminMemberController {
                     required = true,
                     content = @Content(schema = @Schema(implementation = UpdateStatusRequestDto.class))
             )
-            @RequestBody UpdateStatusRequestDto requestDto) {
+            @Valid @RequestBody UpdateStatusRequestDto requestDto) {
 
         adminMemberService.updateStatus(id, requestDto.getStatus());
-        return ResponseEntity.ok(ApiResponseDto.of(200, "User status has been updated.", null));
+        return ResponseEntity.ok(ApiResponseDto.of(200, "회원 상태 변경 성공", null));
     }
 
 

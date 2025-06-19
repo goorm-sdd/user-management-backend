@@ -17,4 +17,8 @@ public class ApiResponseDto<T> {
     public static <T> ApiResponseDto<T> of(int status, String message, T data) {
         return new ApiResponseDto<>(status, message, data);
     }
+
+    public static <T> ApiResponseDto<T> error(int status, String message) {
+        return new ApiResponseDto<>(status, message, null);
+    }
 }

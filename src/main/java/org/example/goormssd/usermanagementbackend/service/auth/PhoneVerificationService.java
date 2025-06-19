@@ -7,6 +7,8 @@ import net.nurigo.sdk.message.model.Message;
 import net.nurigo.sdk.message.request.SingleMessageSendingRequest;
 import net.nurigo.sdk.message.service.DefaultMessageService;
 import org.example.goormssd.usermanagementbackend.domain.PhoneVerification;
+import org.example.goormssd.usermanagementbackend.exception.ErrorCode;
+import org.example.goormssd.usermanagementbackend.exception.GlobalException;
 import org.example.goormssd.usermanagementbackend.repository.PhoneVerificationRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -50,7 +52,7 @@ public class PhoneVerificationService {
         try {
             messageService.sendOne(new SingleMessageSendingRequest(message));
         } catch (Exception e) {
-            throw new RuntimeException("SMS 발송 실패", e);
+            throw new GlobalException(ErrorCode.SMS_SEND_FAILED);
         }
 
         // 인증 정보 DB에 저장 (갱신 or 신규 저장)
@@ -68,14 +70,14 @@ public class PhoneVerificationService {
 
     public void verifyCode(String phoneNumber, String inputCode) {
         PhoneVerification verification = repository.findById(phoneNumber)
-                .orElseThrow(() -> new IllegalArgumentException("인증 요청 기록이 없습니다."));
+                .orElseThrow(() -> new GlobalException(ErrorCode.VERIFICATION_NOT_FOUND));
 
         if (verification.isExpired()) {
-            throw new IllegalArgumentException("인증번호가 만료되었습니다.");
+            throw new GlobalException(ErrorCode.VERIFICATION_CODE_EXPIRED);
         }
 
         if (!verification.getCode().equals(inputCode)) {
-            throw new IllegalArgumentException("인증번호가 일치하지 않습니다.");
+            throw new GlobalException(ErrorCode.VERIFICATION_CODE_INVALID);
         }
 
         verification.verify();

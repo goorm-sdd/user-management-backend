@@ -4,12 +4,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.example.goormssd.usermanagementbackend.dto.common.ApiResponseDto;
 import org.example.goormssd.usermanagementbackend.service.auth.EmailVerificationService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.net.URI;
 
 @CrossOrigin(
         origins = {
@@ -32,17 +30,17 @@ public class EmailVerificationController {
     )
     @Tag(name = "인증 API", description = "회원가입, 로그인, 인증 관련 API입니다.")
     @GetMapping("/email/verify")
-    public ResponseEntity<String> verifyEmail(
+    public ResponseEntity<ApiResponseDto<String>> verifyEmail(
             @Parameter(description = "이메일 인증 코드", example = "a1b2c3d4e5")
             @RequestParam("code") String code
     ) {
         emailVerificationService.verifyEmailCode(code);
 
         // 인증 완료 후 프론트엔드의 인증 완료 페이지로 리디렉션
-        URI redirectUri = URI.create("https://user-management-frontend-ruby.vercel.app/");
+        String redirectUri = "https://user-management-frontend-ruby.vercel.app/";
 
-        return ResponseEntity.status(HttpStatus.FOUND)
-                .location(redirectUri)
-                .build();
+        return ResponseEntity.ok(
+                ApiResponseDto.of(200, "이메일 인증이 완료되었습니다. 아래 주소로 이동해주세요.", redirectUri)
+        );
     }
 }

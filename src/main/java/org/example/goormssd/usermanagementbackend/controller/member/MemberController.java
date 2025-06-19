@@ -7,10 +7,10 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.goormssd.usermanagementbackend.dto.member.request.UpdatePasswordRequestDto;
-import org.example.goormssd.usermanagementbackend.dto.member.request.UpdatePhoneRequestDto;
 import org.example.goormssd.usermanagementbackend.dto.admin.request.UpdateStatusRequestDto;
 import org.example.goormssd.usermanagementbackend.dto.common.ApiResponseDto;
+import org.example.goormssd.usermanagementbackend.dto.member.request.UpdatePasswordRequestDto;
+import org.example.goormssd.usermanagementbackend.dto.member.request.UpdatePhoneRequestDto;
 import org.example.goormssd.usermanagementbackend.dto.member.response.MyProfileResponseDto;
 import org.example.goormssd.usermanagementbackend.security.UserDetailsImpl;
 import org.example.goormssd.usermanagementbackend.service.member.MemberService;
@@ -45,13 +45,8 @@ public class MemberController {
 
         MyProfileResponseDto responseDto = memberService.getMyProfile();
 
-        ApiResponseDto<MyProfileResponseDto> response = new ApiResponseDto<>(
-                200,
-                "User information retrieved successfully.",
-                responseDto
-        );
+        return ResponseEntity.ok(ApiResponseDto.of(200, "프로필 조회가 완료되었습니다.", responseDto));
 
-        return ResponseEntity.ok(response);
     }
 
     @PatchMapping("/users/me/password")
@@ -69,7 +64,7 @@ public class MemberController {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
         memberService.updatePassword(userDetails.getMember(), requestDto);
-        return ResponseEntity.ok(ApiResponseDto.of(200, "User information updated successfully.",null));
+        return ResponseEntity.ok(ApiResponseDto.of(200, "비밀번호가 성공적으로 변경되었습니다.", null));
     }
 
 
@@ -87,7 +82,7 @@ public class MemberController {
     ) {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         memberService.updatePhoneNumber(userDetails.getMember(), requestDto.getPhoneNumber());
-        return ResponseEntity.ok(ApiResponseDto.of(200, "User information updated successfully.", null));
+        return ResponseEntity.ok(ApiResponseDto.of(200, "전화번호가 성공적으로 변경되었습니다.", null));
     }
 
     @PatchMapping("/users/me/status")
@@ -104,6 +99,6 @@ public class MemberController {
     ) {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         memberService.updateStatus(userDetails.getMember(), requestDto.getStatus());
-        return ResponseEntity.ok(ApiResponseDto.of(200, "회원 상태가 변경되었습니다.", null));
+        return ResponseEntity.ok(ApiResponseDto.of(200, "회원 상태가 성공적으로 변경되었습니다.", null));
     }
 }

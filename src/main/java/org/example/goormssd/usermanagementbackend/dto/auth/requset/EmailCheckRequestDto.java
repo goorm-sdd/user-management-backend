@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 public class EmailCheckRequestDto {
 
-    @NotBlank
-    @Email
+    @NotBlank(message = "이메일은 필수 입력입니다.")
+    @Email(message = "유효한 이메일 형식을 입력해주세요.")
     private String email;
 }

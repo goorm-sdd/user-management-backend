@@ -7,6 +7,8 @@ import org.example.goormssd.usermanagementbackend.dto.admin.response.MemberDetai
 import org.example.goormssd.usermanagementbackend.dto.admin.response.MemberListResponseDto;
 import org.example.goormssd.usermanagementbackend.dto.member.request.MemberSearchConditionDto;
 import org.example.goormssd.usermanagementbackend.dto.member.response.MemberResponseDto;
+import org.example.goormssd.usermanagementbackend.exception.ErrorCode;
+import org.example.goormssd.usermanagementbackend.exception.GlobalException;
 import org.example.goormssd.usermanagementbackend.repository.MemberRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -54,7 +56,7 @@ public class AdminMemberService {
 
     public MemberDetailResponseDto getMemberDetailById(Long id) {
         Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 회원이 존재하지 않습니다. id=" + id));
+                .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
         return new MemberDetailResponseDto(
                 member.getId(),
                 member.getUsername(),
@@ -97,14 +99,14 @@ public class AdminMemberService {
 
     public void updateStatus(Long id, String status) {
         Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 회원이 존재하지 않습니다."));
+                .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
 
         if ("active".equalsIgnoreCase(status)) {
             member.setStatus(Member.Status.ACTIVE);
         } else if ("deleted".equalsIgnoreCase(status)) {
             member.setStatus(Member.Status.DELETED);
         } else {
-            throw new IllegalArgumentException("Invalid status value. Must be 'active' or 'deleted'.");
+            throw new GlobalException(ErrorCode.INVALID_STATUS_VALUE);
         }
 
         memberRepository.save(member);
@@ -118,16 +120,7 @@ public class AdminMemberService {
         Page<Member> page = memberRepository.findAll(pageable);
 
         List<MemberResponseDto> users = page.getContent().stream()
-                .map(member -> new MemberResponseDto(
-                        member.getId(),
-                        member.getUsername(),
-                        member.getEmail(),
-                        member.getPhoneNumber(),
-                        member.getRole().name(),
-                        member.getStatus().name().toLowerCase(),
-                        member.isEmailVerified(),
-                        member.getCreatedAt()
-                ))
+                .map(MemberResponseDto::from)
                 .collect(Collectors.toList());
 
         return new MemberListResponseDto(
@@ -146,17 +139,9 @@ public class AdminMemberService {
         Page<Member> page = memberRepository.findAllByStatus(Member.Status.DELETED, pageable);
 
         List<MemberResponseDto> users = page.getContent().stream()
-                .map(member -> new MemberResponseDto(
-                        member.getId(),
-                        member.getUsername(),
-                        member.getEmail(),
-                        member.getPhoneNumber(),
-                        member.getRole().name(),
-                        member.getStatus().name().toLowerCase(),
-                        member.isEmailVerified(),
-                        member.getCreatedAt()
-                ))
+                .map(MemberResponseDto::from)
                 .collect(Collectors.toList());
+
 
         return new MemberListResponseDto(
                 users,
@@ -174,16 +159,7 @@ public class AdminMemberService {
         Page<Member> page = memberRepository.findAllByEmailVerifiedFalse(pageable);
 
         List<MemberResponseDto> users = page.getContent().stream()
-                .map(member -> new MemberResponseDto(
-                        member.getId(),
-                        member.getUsername(),
-                        member.getEmail(),
-                        member.getPhoneNumber(),
-                        member.getRole().name(),
-                        member.getStatus().name().toLowerCase(),
-                        member.isEmailVerified(),
-                        member.getCreatedAt()
-                ))
+                .map(MemberResponseDto::from)
                 .collect(Collectors.toList());
 
         return new MemberListResponseDto(
