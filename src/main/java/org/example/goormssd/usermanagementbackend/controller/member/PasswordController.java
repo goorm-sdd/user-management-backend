@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin(
         origins = {
                 "http://localhost:5173",
-                "https://user-management-frontend-ruby.vercel.app/"
+                "https://user-management-frontend-ruby.vercel.app"
         },
         allowCredentials = "true"
 )

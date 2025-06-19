@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin(
         origins = {
                 "http://localhost:5173",
-                "https://user-management-frontend-ruby.vercel.app/"
+                "https://user-management-frontend-ruby.vercel.app"
         },
         allowCredentials = "true"
 )
@@ -37,7 +37,7 @@ public class EmailVerificationController {
         emailVerificationService.verifyEmailCode(code);
 
         // 인증 완료 후 프론트엔드의 인증 완료 페이지로 리디렉션
-        String redirectUri = "https://user-management-frontend-ruby.vercel.app/";
+        String redirectUri = "https://user-management-frontend-ruby.vercel.app";
 
         return ResponseEntity.ok(
                 ApiResponseDto.of(200, "이메일 인증이 완료되었습니다. 아래 주소로 이동해주세요.", redirectUri)

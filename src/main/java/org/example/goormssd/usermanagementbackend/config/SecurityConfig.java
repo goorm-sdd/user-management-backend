@@ -116,7 +116,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173", "https://user-management-frontend-ruby.vercel.app/")); // Vite + 서버 주소
+        configuration.setAllowedOrigins(List.of("http://localhost:5173", "https://user-management-frontend-ruby.vercel.app")); // Vite + 서버 주소
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of(
                 "Authorization",
